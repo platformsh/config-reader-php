@@ -1,36 +1,37 @@
 <?php
-
+namespace Platformsh\Config;
 /**
 * Reads Platform.sh configuration from environment and returns a single object
 */
-if (getenv('PLATFORM_PROJECT')){
-//  namespace Platformsh\Config;
-  class PlatformConfig
-  {
-    protected static $configuration = array();
-    private function __construct() {} // make this private so we can't instanciate
-      public static function set($key, $val)
-      {
-        self::$configuration[$key] = $val;
+
+class PlatformConfig
+{
+  protected static $configuration = array();
+  private function __construct() {} // make this private so we can't instanciate
+    public static function set($key, $val)
+    {
+      self::$configuration[$key] = $val;
+    }
+    public static function get($key)
+    {
+      return self::$configuration[$key];
+    }
+    public static function config()
+    {
+      return self::$configuration;
+    }
+    static function read_base64_json($var_name){
+      try {
+        return  json_decode(base64_decode(getenv($var_name)));
       }
-      public static function get($key)
-      {
-        return self::$configuration[$key];
-      }
-      public static function config()
-      {
-        return self::$configuration;
-      }
-      static function read_base64_json($var_name){
-        try {
-          return  json_decode(base64_decode(getenv($var_name)));
-        }
-        catch (Exception $e) {
-          echo 'Exception : ',  $e->getMessage(), " $var_name does not seem to exist\n";
-          return null;
-        }
+      catch (Exception $e) {
+        echo 'Exception : ',  $e->getMessage(), " $var_name does not seem to exist\n";
+        return null;
       }
     }
+  }
+    
+  if (getenv('PLATFORM_PROJECT')){
     try {
       PlatformConfig::set("application", PlatformConfig::read_base64_json('PLATFORM_APPLICATION')); 
       PlatformConfig::set("relationships", PlatformConfig::read_base64_json('PLATFORM_RELATIONSHIPS')); 
