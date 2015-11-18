@@ -74,7 +74,7 @@ class Config
         $result = json_decode(base64_decode($variable), true);
         if (json_last_error()) {
             throw new \Exception(
-                sprintf('Error decoding JSON, message: %s', json_last_error_msg())
+                sprintf('Error decoding JSON, code: %d', json_last_error())
             );
         }
 
