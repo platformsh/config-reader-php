@@ -1,15 +1,19 @@
-# Config
+# platformsh/config-reader
 
 A small helper to access a Platform.sh application's configuration, via
 environment variables.
+
+Include it in your project with:
+
+```bash
+composer require platformsh/config-reader
+```
 
 ```php
 // Load the helper via Composer. Usually this is done once for your application.
 require 'vendor/autoload.php';
 
-use Platformsh\Config;
-
-$config = new Config();
+$config = new \Platformsh\ConfigReader\Config();
 
 // You can check for any particular value being available:
 if (isset($config->relationships['database'][0])) {

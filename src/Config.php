@@ -1,5 +1,5 @@
 <?php
-namespace Platformsh;
+namespace Platformsh\ConfigReader;
 
 /**
  * Reads Platform.sh configuration from environment variables.
@@ -48,11 +48,14 @@ class Config
     }
 
     /**
-     * Constructs a Config object.
+     * Constructs a ConfigReader object.
+     *
+     * @param array|null $environmentVariables
+     *   The environment variables to read. Defaults to $_ENV.
      */
-    public function __construct()
+    public function __construct(array $environmentVariables = null)
     {
-        $this->environmentVariables = $_ENV;
+        $this->environmentVariables = $environmentVariables ?: $_ENV;
     }
 
     /**

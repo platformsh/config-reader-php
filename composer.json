@@ -1,5 +1,5 @@
 {
-  "name": "platformsh/config",
+  "name": "platformsh/config-reader",
   "description": "Small helper to access Platform.sh environment variables",
   "license": "BSD",
   "authors": [
@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Platformsh\\": "src"
+      "Platformsh\\ConfigReader\\": "src"
     }
   }
 }
