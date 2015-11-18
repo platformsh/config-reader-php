@@ -1,21 +1,25 @@
 {
-    "name": "platform.sh/platformsh-php-helper",
-    "description": "Small helper to acces Platform.sh environment variables",
-    "license": "BSD",
-    "authors": [
-        {
-            "name": "Ori Pekelman",
-            "email": "ori+github@pekelman.com"
-        }
-    ],
-    "require": {},
-    "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.4.0"
+  "name": "platformsh/config-reader",
+  "description": "Small helper to access Platform.sh environment variables",
+  "license": "BSD",
+  "authors": [
+    {
+      "name": "Ori Pekelman",
+      "email": "ori+github@pekelman.com"
     },
-    "autoload": {
-        "psr-4": {
-            "Platformsh\\Client\\": "src"
-        }
-      }
+    {
+      "name": "Patrick Dawkins"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Platformsh\\ConfigReader\\": "src"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8"
+  }
 }
