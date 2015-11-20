@@ -20,6 +20,9 @@ namespace Platformsh\ConfigReader;
  *   The absolute path to the application.
  * @property-read string $document_root
  *   The absolute path to the web root of the application.
+ * @property-read string $mode
+ *   The hosting mode (this will only be set on Platform.sh Enterprise, and it
+ *   will have the value 'enterprise').
  * @property-read array $application
  *   The application's configuration, as defined in the .platform.app.yaml file.
  * @property-read array $relationships

@@ -15,7 +15,7 @@ require 'vendor/autoload.php';
 
 $config = new \Platformsh\ConfigReader\Config();
 
-// You can check for any particular value being available:
+// You can check for any particular value being available (recommended):
 if (isset($config->relationships['database'][0])) {
     $database = $config->relationships['database'][0];
 
