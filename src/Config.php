@@ -23,20 +23,21 @@ namespace Platformsh\ConfigReader;
  * @property-read string $mode
  *   The hosting mode (this will only be set on Platform.sh Enterprise, and it
  *   will have the value 'enterprise').
- * @property-read array $application
+ * @property-read array  $application
  *   The application's configuration, as defined in the .platform.app.yaml file.
- * @property-read array $relationships
+ * @property-read array  $relationships
  *   The environment's relationships to other services. The keys are the name of
  *   the relationship (as configured for the application), and the values are a
  *   list of
- * @property-read array $routes
+ * @property-read array  $routes
  *   The routes configured for the environment.
- * @property-read array $variables
+ * @property-read array  $variables
  *   Custom environment variables.
  */
 class Config
 {
     protected $config = [];
+
     protected $environmentVariables = [];
 
     /**
@@ -58,7 +59,22 @@ class Config
      */
     public function __construct(array $environmentVariables = null)
     {
-        $this->environmentVariables = $environmentVariables ?: $_ENV;
+        $this->environmentVariables = $environmentVariables ?: $this->getDefaultEnvironment();
+    }
+
+    /**
+     * Returns the default environment. Falls back to the server array on cli usage, because $_ENV is empty then.
+     *
+     * @return array
+     */
+    protected function getDefaultEnvironment()
+    {
+        $env = $_ENV;
+        if (php_sapi_name() === 'cli' && 0 === count($env)) {
+            $env = $_SERVER;
+        }
+
+        return $env;
     }
 
     /**
@@ -77,7 +93,7 @@ class Config
         $result = json_decode(base64_decode($variable), true);
         if (json_last_error()) {
             throw new \Exception(
-                sprintf('Error decoding JSON, code: %d', json_last_error())
+              sprintf('Error decoding JSON, code: %d', json_last_error())
             );
         }
 
@@ -96,10 +112,10 @@ class Config
     protected function shouldDecode($variableName)
     {
         return in_array($variableName, [
-            'PLATFORM_APPLICATION',
-            'PLATFORM_RELATIONSHIPS',
-            'PLATFORM_ROUTES',
-            'PLATFORM_VARIABLES',
+          'PLATFORM_APPLICATION',
+          'PLATFORM_RELATIONSHIPS',
+          'PLATFORM_ROUTES',
+          'PLATFORM_VARIABLES',
         ]);
     }
 
