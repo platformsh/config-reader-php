@@ -33,6 +33,9 @@ namespace Platformsh\ConfigReader;
  *   The routes configured for the environment.
  * @property-read array $variables
  *   Custom environment variables.
+ * @property-read string $smtp_host
+ *   The hostname of the Platform.sh default SMTP server (an empty string if
+ *   emails are disabled on the environment).
  */
 class Config
 {
