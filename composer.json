@@ -1,7 +1,7 @@
 {
   "name": "platformsh/config-reader",
   "description": "Small helper to access Platform.sh environment variables",
-  "license": "BSD",
+  "license": "MIT",
   "authors": [
     {
       "name": "Ori Pekelman",
