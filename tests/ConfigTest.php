@@ -50,6 +50,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $config->variables;
     }
 
+    public function testCustomPrefix()
+    {
+        $config = new Config(['ENVIRONMENT' => 'test-environment'], '');
+        $this->assertTrue($config->isAvailable());
+    }
+
     /**
      * @param mixed $value
      *

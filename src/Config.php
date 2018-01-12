@@ -1,10 +1,17 @@
 <?php
+
 namespace Platformsh\ConfigReader;
 
 /**
+ * @class Config
  * Reads Platform.sh configuration from environment variables.
  *
- * @link https://docs.platform.sh/user_guide/reference/environment-variables.html
+ * @link https://docs.platform.sh/development/variables.html
+ *
+ * The following are 'magic' properties that may exist on a Config object.
+ * Before accessing a property, check its existence with
+ * isset($config->variableName) or !empty($config->variableName). Attempting to
+ * access a nonexistent variable will throw an exception.
  *
  * @property-read string $project
  *   The project ID.
@@ -23,15 +30,16 @@ namespace Platformsh\ConfigReader;
  * @property-read string $mode
  *   The hosting mode (this will only be set on Platform.sh Enterprise, and it
  *   will have the value 'enterprise').
- * @property-read array $application
+ * @property-read array  $application
  *   The application's configuration, as defined in the .platform.app.yaml file.
- * @property-read array $relationships
+ * @property-read array  $relationships
  *   The environment's relationships to other services. The keys are the name of
- *   the relationship (as configured for the application), and the values are a
- *   list of
- * @property-read array $routes
+ *   the relationship (as configured for the application), and the values are
+ *   arrays of relationship instances. For example, the hostname of a 'mysql'
+ *   relationship may be stored in $config->relationships['mysql'][0]['host'].
+ * @property-read array  $routes
  *   The routes configured for the environment.
- * @property-read array $variables
+ * @property-read array  $variables
  *   Custom environment variables.
  * @property-read string $smtp_host
  *   The hostname of the Platform.sh default SMTP server (an empty string if
@@ -39,8 +47,9 @@ namespace Platformsh\ConfigReader;
  */
 class Config
 {
-    protected $config = [];
-    protected $environmentVariables = [];
+    private $config = [];
+    private $environmentVariables = [];
+    private $envPrefix = '';
 
     /**
      * Checks whether any configuration is available.
@@ -50,18 +59,31 @@ class Config
      */
     public function isAvailable()
     {
-        return isset($this->environmentVariables['PLATFORM_ENVIRONMENT']);
+        return isset($this->environmentVariables[$this->envPrefix . 'ENVIRONMENT']);
     }
 
     /**
      * Constructs a ConfigReader object.
      *
-     * @param array|null $environmentVariables
-     *   The environment variables to read. Defaults to $_ENV.
+     * @param array|null  $environmentVariables
+     *   The environment variables to read. Defaults to the current environment.
+     * @param string|null $envPrefix
+     *   The prefix for environment variables. Defaults to 'PLATFORM_'.
      */
-    public function __construct(array $environmentVariables = null)
+    public function __construct(array $environmentVariables = null, $envPrefix = null)
     {
-        $this->environmentVariables = $environmentVariables ?: $_ENV;
+        $this->environmentVariables = $environmentVariables === null ? $this->getEnv() : $environmentVariables;
+        $this->envPrefix = $envPrefix === null ? 'PLATFORM_' : $envPrefix;
+    }
+
+    /**
+     * Load environment variables.
+     *
+     * @return array
+     */
+    private function getEnv()
+    {
+        return PHP_VERSION_ID >= 70100 ? getenv() : $_ENV;
     }
 
     /**
@@ -75,7 +97,7 @@ class Config
      * @return mixed
      *   An associative array (if representing a JSON object), or a scalar type.
      */
-    protected function decode($variable)
+    private function decode($variable)
     {
         $result = json_decode(base64_decode($variable), true);
         if (json_last_error()) {
@@ -90,20 +112,21 @@ class Config
     /**
      * Determines whether a variable needs to be decoded.
      *
-     * @param string $variableName
-     *   The environment variable name.
+     * @param string $property
+     *   The property name.
      *
      * @return bool
      *   True if the variable is base64- and JSON-encoded, false otherwise.
      */
-    protected function shouldDecode($variableName)
+    private function shouldDecode($property)
     {
-        return in_array($variableName, [
-            'PLATFORM_APPLICATION',
-            'PLATFORM_RELATIONSHIPS',
-            'PLATFORM_ROUTES',
-            'PLATFORM_VARIABLES',
-        ]);
+        return in_array(strtolower($property), [
+            'application',
+            'relationships',
+            'routes',
+            'variables',
+        ]
+        );
     }
 
     /**
@@ -115,9 +138,9 @@ class Config
      * @return string
      *   The environment variable name, e.g. PLATFORM_RELATIONSHIPS.
      */
-    protected function getVariableName($property)
+    private function getVariableName($property)
     {
-        return 'PLATFORM_' . strtoupper($property);
+        return $this->envPrefix . strtoupper($property);
     }
 
     /**
@@ -140,7 +163,7 @@ class Config
                 throw new \Exception(sprintf('Environment variable not found: %s', $variableName));
             }
             $value = $this->environmentVariables[$variableName];
-            if ($this->shouldDecode($variableName)) {
+            if ($this->shouldDecode($property)) {
                 $value = $this->decode($value);
             }
             $this->config[$variableName] = $value;

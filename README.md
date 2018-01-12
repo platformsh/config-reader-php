@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/platformsh/platformsh-config-reader-php.svg?branch=master)](https://travis-ci.org/platformsh/platformsh-config-reader-php)
 
 A small helper to access a Platform.sh application's configuration, via
-environment variables.
+[environment variables](https://docs.platform.sh/development/variables.html).
 
 Include it in your project with:
 
@@ -11,6 +11,9 @@ composer require platformsh/config-reader
 ```
 
 ## Usage
+
+The available variables are documented as properties of the
+[Config](src/Config.php) class.
 
 ```php
 // Load the helper via Composer. Usually this is done once for your application.
