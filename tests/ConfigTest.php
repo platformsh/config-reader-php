@@ -56,11 +56,32 @@ class ConfigTest extends TestCase
         $this->assertFalse($config->isAvailable());
     }
 
-    public function test_on_platform_returns_correctly() : void
+    public function test_on_platform_returns_correctly_in_runtime() : void
     {
         $config = new Config($this->mockEnvironmentDeploy);
 
         $this->assertTrue($config->isAvailable());
+    }
+
+    public function test_on_platform_returns_correctly_in_build() : void
+    {
+        $config = new Config($this->mockEnvironmentBuild);
+
+        $this->assertTrue($config->isAvailable());
+    }
+
+    public function test_inbuild_in_build_phase_is_true() : void
+    {
+        $config = new Config($this->mockEnvironmentBuild);
+
+        $this->assertTrue($config->inBuild());
+    }
+
+    public function test_inbuild_in_deploy_phase_is_false() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $this->assertFalse($config->inBuild());
     }
 
     public function testConfig()
@@ -108,7 +129,7 @@ class ConfigTest extends TestCase
 
     public function testCustomPrefix()
     {
-        $config = new Config(['ENVIRONMENT' => 'test-environment'], '');
+        $config = new Config(['APPLICATION' => 'test-application'], '');
         $this->assertTrue($config->isAvailable());
     }
 

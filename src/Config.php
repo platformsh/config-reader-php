@@ -71,9 +71,34 @@ class Config
      * @return bool
      *   True if configuration can be used, false otherwise.
      */
-    public function isAvailable()
+    public function isAvailable() : bool
     {
-        return isset($this->environmentVariables[$this->envPrefix . 'ENVIRONMENT']);
+        return isset($this->environmentVariables[$this->envPrefix . 'APPLICATION']);
+    }
+
+    /**
+     * Checks whether the code is running in a build environment.
+     *
+     * If false, it's running at deploy time.
+     *
+     * @return bool
+     */
+    public function inBuild() : bool
+    {
+        return  $this->isAvailable() && !$this->getValue('ENVIRONMENT');
+    }
+
+    /**
+     * Reads an environment variable, taking the prefix into account.
+     *
+     * @param string $name
+     *   The variable to read.
+     * @return string|null
+     */
+    protected function getValue(string $name) : ?string
+    {
+        $checkName = $this->envPrefix . $name;
+        return $this->environmentVariables[$checkName] ?? null;
     }
 
     /**
