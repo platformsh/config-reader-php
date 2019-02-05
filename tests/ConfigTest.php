@@ -49,13 +49,24 @@ class ConfigTest extends TestCase
         return json_decode(file_get_contents("tests/valid/{$name}.json"), true);
     }
 
+    public function test_not_on_platform_returns_correctly() : void
+    {
+        $config = new Config();
+
+        $this->assertFalse($config->isAvailable());
+    }
+
+    public function test_on_platform_returns_correctly() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $this->assertTrue($config->isAvailable());
+    }
+
     public function testConfig()
     {
         //$this->expectException(\Exception::class);
         //$this->expectExceptionMessage('Error decoding JSON');
-
-        $config = new Config();
-        $this->assertFalse($config->isAvailable());
 
         $mockEnv = [
             'PLATFORM_PROJECT' => 'test-project',
