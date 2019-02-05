@@ -52,6 +52,15 @@ class Config
     private $envPrefix = '';
 
     /**
+     * The routes definition array.
+     *
+     * Only available at runtime.
+     *
+     * @var array
+     */
+    protected $routes = [];
+
+    /**
      * Constructs a ConfigReader object.
      *
      * @param array|null  $environmentVariables
@@ -63,6 +72,10 @@ class Config
     {
         $this->environmentVariables = $environmentVariables ?? $this->getEnv();
         $this->envPrefix = $envPrefix ?? 'PLATFORM_';
+
+        if ($this->isAvailable() && !$this->inBuild() && isset($this->environmentVariables['PLATFORM_ROUTES'])) {
+            $this->routes = $this->decode($this->getValue('ROUTES'));
+        }
     }
 
     /**
@@ -85,7 +98,49 @@ class Config
      */
     public function inBuild() : bool
     {
-        return  $this->isAvailable() && !$this->getValue('ENVIRONMENT');
+        return $this->isAvailable() && !$this->getValue('ENVIRONMENT');
+    }
+
+    /**
+     * Returns the routes definition.
+     *
+     * @return array
+     *   The routes array, in PHP nested array form.
+     * @throws \RuntimeException
+     *   If the routes are not accessible due to being in the wrong environment.
+     */
+    public function routes() : array
+    {
+        if (!$this->isAvailable()) {
+            throw new \RuntimeException('You are not running on Platform.sh, so routes are not available.');
+        }
+
+        if ($this->inBuild()) {
+            throw new \RuntimeException('Routes are not available during the build phase.');
+        }
+
+        return $this->routes;
+    }
+
+    /**
+     * @param string $id
+     *   The ID of the route to load.
+     * @return array
+     *   The route definition.  The generated URL of the route is added as a "url" key.
+     * @throws \InvalidArgumentException
+     *   If there is no route by that ID, an exception is thrown.
+     */
+    public function getRoute(string $id) : array
+    {
+        foreach ($this->routes() as $url => $route) {
+            if ($route['id'] == $id) {
+                // This is non-standard, but means we don't need to return the array key in parallel.
+                $route['url'] = $url;
+                return $route;
+            }
+        }
+
+        throw new \InvalidArgumentException(sprintf('No such route id found: %s', $id));
     }
 
     /**

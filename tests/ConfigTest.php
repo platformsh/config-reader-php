@@ -104,6 +104,40 @@ class ConfigTest extends TestCase
         $this->assertEquals('/app/web', $config->docRoot);
     }
 
+    public function test_load_routes_in_runtime_works() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $routes = $config->routes();
+
+        $this->assertTrue(is_array($routes));
+    }
+
+    public function test_load_routes_in_build_fails() : void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $config = new Config($this->mockEnvironmentBuild);
+        $routes = $config->routes();
+    }
+
+    public function test_get_route_by_id_works() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $route = $config->getRoute('main');
+
+        $this->assertEquals('https://www.{default}/', $route['original_url']);
+    }
+
+    public function test_get_non_existent_route_throws_exception() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $route = $config->getRoute('missing');
+    }
+
     public function testConfig()
     {
         //$this->expectException(\Exception::class);
@@ -131,7 +165,6 @@ class ConfigTest extends TestCase
 
         /** @noinspection PhpUndefinedFieldInspection */
         $this->assertEquals('some-new-variable', $config->new);
-
     }
 
     public function testInvalidJson()
@@ -140,6 +173,7 @@ class ConfigTest extends TestCase
         $this->expectExceptionMessage('Error decoding JSON, code: 4');
 
         $config = new Config([
+            'PLATFORM_APPLICATION' => 'app',
             'PLATFORM_ENVIRONMENT' => 'test-environment',
             'PLATFORM_VARIABLES' => base64_encode('{some-invalid-json}'),
         ]);
