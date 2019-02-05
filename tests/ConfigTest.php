@@ -1,13 +1,16 @@
 <?php
 
-namespace Platformsh\ConfigReader\Tests;
+namespace Platformsh\ConfigReader;
 
-use Platformsh\ConfigReader\Config;
+use PHPUnit\Framework\TestCase;
 
-class ConfigTest extends \PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
     public function testConfig()
     {
+        //$this->expectException(\Exception::class);
+        //$this->expectExceptionMessage('Error decoding JSON');
+
         $config = new Config();
         $this->assertFalse($config->isAvailable());
 
@@ -34,19 +37,18 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $this->assertEquals('some-new-variable', $config->new);
 
-        $this->setExpectedException('Exception', 'not found');
-        /** @noinspection PhpUndefinedFieldInspection */
-        $config->nonexistent;
     }
 
     public function testInvalidJson()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Error decoding JSON, code: 4');
+
         $config = new Config([
             'PLATFORM_ENVIRONMENT' => 'test-environment',
             'PLATFORM_VARIABLES' => base64_encode('{some-invalid-json}'),
         ]);
 
-        $this->setExpectedException('Exception', 'Error decoding JSON');
         $config->variables;
     }
 
