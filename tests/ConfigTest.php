@@ -84,6 +84,26 @@ class ConfigTest extends TestCase
         $this->assertFalse($config->inBuild());
     }
 
+    public function _test_buildtime_properties_are_available() : void
+    {
+        $config = new Config($this->mockEnvironmentBuild);
+
+        $this->assertEquals('/app', $config->appDir);
+        $this->assertEquals('app', $config->applicationName);
+        $this->assertEquals('test-project', $config->project);
+        $this->assertEquals('abc123', $config->treeId);
+        $this->assertEquals('def789', $config->entropy);
+    }
+
+    public function _test_runtime_properties_are_available() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $this->assertEquals('feature-x', $config->branch);
+        $this->assertEquals('feature-x-hgi456', $config->environment);
+        $this->assertEquals('/app/web', $config->docRoot);
+    }
+
     public function testConfig()
     {
         //$this->expectException(\Exception::class);
