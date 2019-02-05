@@ -52,6 +52,20 @@ class Config
     private $envPrefix = '';
 
     /**
+     * Constructs a ConfigReader object.
+     *
+     * @param array|null  $environmentVariables
+     *   The environment variables to read. Defaults to the current environment.
+     * @param string|null $envPrefix
+     *   The prefix for environment variables. Defaults to 'PLATFORM_'.
+     */
+    public function __construct(array $environmentVariables = null, string $envPrefix = null)
+    {
+        $this->environmentVariables = $environmentVariables ?? $this->getEnv();
+        $this->envPrefix = $envPrefix ?? 'PLATFORM_';
+    }
+
+    /**
      * Checks whether any configuration is available.
      *
      * @return bool
@@ -60,20 +74,6 @@ class Config
     public function isAvailable()
     {
         return isset($this->environmentVariables[$this->envPrefix . 'ENVIRONMENT']);
-    }
-
-    /**
-     * Constructs a ConfigReader object.
-     *
-     * @param array|null  $environmentVariables
-     *   The environment variables to read. Defaults to the current environment.
-     * @param string|null $envPrefix
-     *   The prefix for environment variables. Defaults to 'PLATFORM_'.
-     */
-    public function __construct(array $environmentVariables = null, $envPrefix = null)
-    {
-        $this->environmentVariables = $environmentVariables === null ? $this->getEnv() : $environmentVariables;
-        $this->envPrefix = $envPrefix === null ? 'PLATFORM_' : $envPrefix;
     }
 
     /**
