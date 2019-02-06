@@ -71,11 +71,11 @@ class Config
      */
     public function __construct(array $environmentVariables = null, string $envPrefix = null)
     {
-        $this->environmentVariables = $environmentVariables ?? $this->getEnv();
+        $this->environmentVariables = $environmentVariables ?? getenv();
         $this->envPrefix = $envPrefix ?? 'PLATFORM_';
 
-        if ($this->isAvailable() && !$this->inBuild() && isset($this->environmentVariables['PLATFORM_ROUTES'])) {
-            $this->routes = $this->decode($this->getValue('ROUTES'));
+        if ($this->isAvailable() && !$this->inBuild() && $routes = $this->getValue('ROUTES')) {
+            $this->routes = $this->decode($routes);
         }
     }
 
@@ -87,7 +87,7 @@ class Config
      */
     public function isAvailable() : bool
     {
-        return isset($this->environmentVariables[$this->envPrefix . 'APPLICATION']);
+        return (bool)$this->getValue('APPLICATION');
     }
 
     /**
@@ -188,16 +188,6 @@ class Config
     {
         $checkName = $this->envPrefix . $name;
         return $this->environmentVariables[$checkName] ?? null;
-    }
-
-    /**
-     * Load environment variables.
-     *
-     * @return array
-     */
-    private function getEnv()
-    {
-        return PHP_VERSION_ID >= 70100 ? getenv() : $_ENV;
     }
 
     /**
