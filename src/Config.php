@@ -71,6 +71,15 @@ class Config
     protected $relationships = [];
 
     /**
+     * The variables definition array.
+     *
+     * Available in both build and runtime, although possibly with different values.
+     *
+     * @var array
+     */
+    protected $variables = [];
+
+    /**
      * Constructs a ConfigReader object.
      *
      * @param array|null  $environmentVariables
@@ -83,11 +92,16 @@ class Config
         $this->environmentVariables = $environmentVariables ?? getenv();
         $this->envPrefix = $envPrefix ?? 'PLATFORM_';
 
-        if ($this->isAvailable() && !$this->inBuild() && $routes = $this->getValue('ROUTES')) {
-            $this->routes = $this->decode($routes);
-        }
-        if ($this->isAvailable() && !$this->inBuild() && $relationships = $this->getValue('RELATIONSHIPS')) {
-            $this->relationships = $this->decode($relationships);
+        if ($this->isAvailable()) {
+            if (!$this->inBuild() && $routes = $this->getValue('ROUTES')) {
+                $this->routes = $this->decode($routes);
+            }
+            if (!$this->inBuild() && $relationships = $this->getValue('RELATIONSHIPS')) {
+                $this->relationships = $this->decode($relationships);
+            }
+            if ($variables = $this->getValue('VARIABLES')) {
+                $this->variables = $this->decode($variables);
+            }
         }
     }
 
@@ -149,6 +163,29 @@ class Config
         }
 
         return $this->relationships[$relationship][$index];
+    }
+
+    /**
+     * Returns a variable from the VARIABLES array.
+     *
+     * Note: variables prefixed with `env:` can be accessed as normal environment variables.
+     * This method will return such a variable by the name with the prefix still included.
+     * Generally it's better to access those variables directly.
+     *
+     * @param string $name
+     *   The name of the variable to retrieve.
+     * @param mixed $default
+     *   The default value to return if the variable is not defined. Defaults to null.
+     * @return mixed
+     *   The value of the variable, or the specified default.
+     */
+    public function variable(string $name, $default = null)
+    {
+        if (!$this->isAvailable()) {
+            return $default;
+        }
+
+        return $this->variables[$name] ?? $default;
     }
 
     /**

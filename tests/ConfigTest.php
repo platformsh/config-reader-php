@@ -227,6 +227,22 @@ class ConfigTest extends TestCase
         $creds = $config->credentials('database', 3);
     }
 
+    public function test_reading_existing_variable_works() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $this->assertEquals('someval', $config->variable('somevar'));
+    }
+
+    public function test_reading_missing_variable_returns_default() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $this->assertEquals('default-val', $config->variable('missing', 'default-val'));
+    }
+
     public function testConfig()
     {
         //$this->expectException(\Exception::class);
