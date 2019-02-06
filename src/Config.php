@@ -62,6 +62,15 @@ class Config
     protected $routes = [];
 
     /**
+     * The relationships definition array.
+     *
+     * Only available at runtime.
+     *
+     * @var array
+     */
+    protected $relationships = [];
+
+    /**
      * Constructs a ConfigReader object.
      *
      * @param array|null  $environmentVariables
@@ -76,6 +85,9 @@ class Config
 
         if ($this->isAvailable() && !$this->inBuild() && $routes = $this->getValue('ROUTES')) {
             $this->routes = $this->decode($routes);
+        }
+        if ($this->isAvailable() && !$this->inBuild() && $relationships = $this->getValue('RELATIONSHIPS')) {
+            $this->relationships = $this->decode($relationships);
         }
     }
 
@@ -100,6 +112,43 @@ class Config
     public function inBuild() : bool
     {
         return $this->isAvailable() && !$this->getValue('ENVIRONMENT');
+    }
+
+    /**
+     * Retrieves the credentials for accessing a relationship.
+     *
+     * The relationship must be defined in the .platform.app.yaml file.
+     *
+     * @param string $relationship
+     *   The relationship name as defined in .platform.app.yaml.
+     * @param int $index
+     *   The index within the relationship to access.  This is always 0, but reserved
+     *   for future extension.
+     * @return array
+     *   The credentials array for the service pointed to by the relationship.
+     * @throws \RuntimeException
+     *   Thrown if called in a context that has no relationships (eg, in build)
+     * @throws \InvalidArgumentException
+     *   If the relationship/index pair requested does not exist.
+     */
+    public function credentials(string $relationship, int $index = 0) : array
+    {
+        if (!$this->isAvailable()) {
+            throw new \RuntimeException('You are not running on Platform.sh, so relationships are not available.');
+        }
+
+        if ($this->inBuild()) {
+            throw new \RuntimeException('Relationships are not available during the build phase.');
+        }
+
+        if (empty($this->relationships[$relationship])) {
+            throw new \InvalidArgumentException(sprintf('No relationship defined: %s.  Check your .platform.app.yaml file.', $relationship));
+        }
+        if (empty($this->relationships[$relationship][$index])) {
+            throw new \InvalidArgumentException(sprintf('No index %d defined for relationship: %s.  Check your .platform.app.yaml file.', $index, $relationship));
+        }
+
+        return $this->relationships[$relationship][$index];
     }
 
     /**

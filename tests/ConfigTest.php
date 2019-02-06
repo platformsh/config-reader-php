@@ -196,6 +196,37 @@ class ConfigTest extends TestCase
         $this->assertFalse($config->onProduction());
     }
 
+    public function test_credentials_existing_relationship_returns() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $creds = $config->credentials('database');
+
+        $this->assertEquals('mysql', $creds['scheme']);
+        $this->assertEquals('mysql:10.2', $creds['type']);
+    }
+
+    public function test_credentials_missing_relationship_throws() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $creds = $config->credentials('does-not-exist');
+    }
+
+    public function test_credentials_missing_relationship_index_throws() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $creds = $config->credentials('database', 3);
+    }
+
     public function testConfig()
     {
         //$this->expectException(\Exception::class);
