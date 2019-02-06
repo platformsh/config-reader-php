@@ -134,9 +134,27 @@ class ConfigTest extends TestCase
     public function test_get_non_existent_route_throws_exception() : void
     {
         $this->expectException(\InvalidArgumentException::class);
+
         $config = new Config($this->mockEnvironmentDeploy);
 
         $route = $config->getRoute('missing');
+    }
+
+    public function test_onenterprise_returns_true_on_enterprise() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $env['PLATFORM_MODE'] = 'enterprise';
+        $config = new Config($env);
+
+        $this->assertTrue($config->onEnterprise());
+    }
+
+    public function test_onenterprise_returns_false_on_standard() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $this->assertFalse($config->onEnterprise());
     }
 
     public function testConfig()

@@ -145,6 +145,17 @@ class Config
     }
 
     /**
+     * Determines if the current environment is a Platform.sh Enterprise environment.
+     *
+     * @return bool
+     *   True on an Enterprise environment, False otherwise.
+     */
+    public function onEnterprise() : bool
+    {
+        return $this->isAvailable() && $this->getValue('MODE') == 'enterprise';
+    }
+
+    /**
      * Reads an environment variable, taking the prefix into account.
      *
      * @param string $name
