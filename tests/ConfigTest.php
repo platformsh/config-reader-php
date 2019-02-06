@@ -157,6 +157,45 @@ class ConfigTest extends TestCase
         $this->assertFalse($config->onEnterprise());
     }
 
+    public function test_onproduction_on_enterprise_prod_is_true() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $env['PLATFORM_MODE'] = 'enterprise';
+        $env['PLATFORM_BRANCH'] = 'production';
+        $config = new Config($env);
+
+        $this->assertTrue($config->onProduction());
+    }
+
+    public function test_onproduction_on_enterprise_stg_is_false() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $env['PLATFORM_MODE'] = 'enterprise';
+        $env['PLATFORM_BRANCH'] = 'staging';
+        $config = new Config($env);
+
+        $this->assertFalse($config->onProduction());
+
+    }
+
+    public function test_onproduction_on_standard_prod_is_true() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $env['PLATFORM_BRANCH'] = 'master';
+        $config = new Config($env);
+
+        $this->assertTrue($config->onProduction());
+    }
+
+    public function test_onproduction_on_standard_stg_is_false() : void
+    {
+        // The fixture has a non-master branch set by default.
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $this->assertFalse($config->onProduction());
+    }
+
     public function testConfig()
     {
         //$this->expectException(\Exception::class);

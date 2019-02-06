@@ -156,6 +156,28 @@ class Config
     }
 
     /**
+     * Determines if the current environment is a production environment.
+     *
+     * Note: There may be a few edge cases where this is not entirely correct on Enterprise,
+     * if the production branch is not named `production`.  In that case you'll need to use
+     * your own logic.
+     *
+     * @return bool
+     *   True if the environment is a production environment, false otherwise.
+     *   It will also return false if not running on Platform.sh or in the build phase.
+     */
+    public function onProduction() : bool
+    {
+        if (!$this->isAvailable() && !$this->inBuild()) {
+            false;
+        }
+
+        $prodBranch = $this->onEnterprise() ? 'production' : 'master';
+
+        return $this->getValue('BRANCH') == $prodBranch;
+    }
+
+    /**
      * Reads an environment variable, taking the prefix into account.
      *
      * @param string $name
