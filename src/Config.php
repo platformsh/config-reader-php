@@ -177,7 +177,7 @@ class Config
      * @param mixed $default
      *   The default value to return if the variable is not defined. Defaults to null.
      * @return mixed
-     *   The value of the variable, or the specified default.
+     *   The value of the variable, or the specified default.  This may be a string or an array.
      */
     public function variable(string $name, $default = null)
     {
@@ -186,6 +186,24 @@ class Config
         }
 
         return $this->variables[$name] ?? $default;
+    }
+
+    /**
+     * Returns the full variables array.
+     *
+     * If you're looking for a specific variable, the variable() method is a more robust option.
+     * This method is for cases where you want to scan the whole variables list looking for a pattern.
+     *
+     * @return array
+     *   The full variables array.
+     */
+    public function variables() : array
+    {
+        if (!$this->isAvailable()) {
+            throw new \RuntimeException('You are not running on Platform.sh, so the variables array is not available.');
+        }
+
+        return $this->variables;
     }
 
     /**

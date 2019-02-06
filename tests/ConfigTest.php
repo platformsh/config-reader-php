@@ -243,6 +243,16 @@ class ConfigTest extends TestCase
         $this->assertEquals('default-val', $config->variable('missing', 'default-val'));
     }
 
+    public function test_variables_returns_on_platform() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $vars = $config->variables();
+
+        $this->assertEquals('someval', $vars['somevar']);
+    }
+
     public function testConfig()
     {
         //$this->expectException(\Exception::class);
