@@ -344,8 +344,6 @@ class ConfigTest extends TestCase
             'PLATFORM_ENVIRONMENT' => 'test-environment',
             'PLATFORM_VARIABLES' => base64_encode('{some-invalid-json}'),
         ]);
-
-        $config->variables;
     }
 
     public function testCustomPrefix()
