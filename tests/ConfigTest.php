@@ -53,21 +53,21 @@ class ConfigTest extends TestCase
     {
         $config = new Config();
 
-        $this->assertFalse($config->isAvailable());
+        $this->assertFalse($config->isValidPlatform());
     }
 
     public function test_on_platform_returns_correctly_in_runtime() : void
     {
         $config = new Config($this->mockEnvironmentDeploy);
 
-        $this->assertTrue($config->isAvailable());
+        $this->assertTrue($config->isValidPlatform());
     }
 
     public function test_on_platform_returns_correctly_in_build() : void
     {
         $config = new Config($this->mockEnvironmentBuild);
 
-        $this->assertTrue($config->isAvailable());
+        $this->assertTrue($config->isValidPlatform());
     }
 
     public function test_inbuild_in_build_phase_is_true() : void
@@ -359,7 +359,7 @@ class ConfigTest extends TestCase
     public function testCustomPrefix()
     {
         $config = new Config(['FAKE_APPLICATION_NAME' => 'test-application'], 'FAKE_');
-        $this->assertTrue($config->isAvailable());
+        $this->assertTrue($config->isValidPlatform());
     }
 
     /**

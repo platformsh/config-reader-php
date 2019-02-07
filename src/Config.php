@@ -138,7 +138,7 @@ class Config
         $this->environmentVariables = $environmentVariables ?? getenv();
         $this->envPrefix = $envPrefix;
 
-        if ($this->isAvailable()) {
+        if ($this->isValidPlatform()) {
             if (!$this->inBuild() && $routes = $this->getValue('ROUTES')) {
                 $this->routes = $this->decode($routes);
             }
@@ -155,12 +155,12 @@ class Config
     }
 
     /**
-     * Checks whether any configuration is available.
+     * Checks whether the code is running on a platform with valid environment variables.
      *
      * @return bool
      *   True if configuration can be used, false otherwise.
      */
-    public function isAvailable() : bool
+    public function isValidPlatform() : bool
     {
         return (bool)$this->getValue('APPLICATION_NAME');
     }
@@ -174,7 +174,7 @@ class Config
      */
     public function inBuild() : bool
     {
-        return $this->isAvailable() && !$this->getValue('ENVIRONMENT');
+        return $this->isValidPlatform() && !$this->getValue('ENVIRONMENT');
     }
 
     /**
@@ -196,7 +196,7 @@ class Config
      */
     public function credentials(string $relationship, int $index = 0) : array
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isValidPlatform()) {
             throw new \RuntimeException('You are not running on Platform.sh, so relationships are not available.');
         }
 
@@ -230,7 +230,7 @@ class Config
      */
     public function variable(string $name, $default = null)
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isValidPlatform()) {
             return $default;
         }
 
@@ -248,7 +248,7 @@ class Config
      */
     public function variables() : array
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isValidPlatform()) {
             throw new \RuntimeException('You are not running on Platform.sh, so the variables array is not available.');
         }
 
@@ -265,7 +265,7 @@ class Config
      */
     public function routes() : array
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isValidPlatform()) {
             throw new \RuntimeException('You are not running on Platform.sh, so routes are not available.');
         }
 
@@ -308,7 +308,7 @@ class Config
      */
     public function application() : array
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isValidPlatform()) {
             throw new \RuntimeException('You are not running on Platform.sh, so the application definition are not available.');
         }
 
@@ -324,7 +324,7 @@ class Config
      */
     public function onEnterprise() : bool
     {
-        return $this->isAvailable() && $this->getValue('MODE') == 'enterprise';
+        return $this->isValidPlatform() && $this->getValue('MODE') == 'enterprise';
     }
 
     /**
@@ -340,7 +340,7 @@ class Config
      */
     public function onProduction() : bool
     {
-        if (!$this->isAvailable() && !$this->inBuild()) {
+        if (!$this->isValidPlatform() && !$this->inBuild()) {
             false;
         }
 
@@ -399,7 +399,7 @@ class Config
      */
     public function __get($property)
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isValidPlatform()) {
             throw new \RuntimeException(sprintf('You are not running on Platform.sh, so the %s variable are not available.', $property));
         }
 
@@ -431,7 +431,7 @@ class Config
      */
     public function __isset($property)
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isValidPlatform()) {
             return false;
         }
 
