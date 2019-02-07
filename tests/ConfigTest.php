@@ -334,13 +334,23 @@ class ConfigTest extends TestCase
         $branch = $config->missing;
     }
 
+    public function test_application_array_available() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $app = $config->application();
+
+        $this->assertEquals('php:7.2', $app['type']);
+    }
+
     public function testInvalidJson()
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Error decoding JSON, code: 4');
 
         $config = new Config([
-            'PLATFORM_APPLICATION' => 'app',
+            'PLATFORM_APPLICATION_NAME' => 'app',
             'PLATFORM_ENVIRONMENT' => 'test-environment',
             'PLATFORM_VARIABLES' => base64_encode('{some-invalid-json}'),
         ]);
@@ -348,7 +358,7 @@ class ConfigTest extends TestCase
 
     public function testCustomPrefix()
     {
-        $config = new Config(['APPLICATION' => 'test-application'], '');
+        $config = new Config(['FAKE_APPLICATION_NAME' => 'test-application'], 'FAKE_');
         $this->assertTrue($config->isAvailable());
     }
 

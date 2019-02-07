@@ -117,6 +117,15 @@ class Config
     protected $variables = [];
 
     /**
+     * The application definition array.
+     *
+     * This is, approximately, the .platform.app.yaml file in nested array form.
+     *
+     * @var array
+     */
+    protected $application = [];
+
+    /**
      * Constructs a ConfigReader object.
      *
      * @param array|null  $environmentVariables
@@ -139,6 +148,9 @@ class Config
             if ($variables = $this->getValue('VARIABLES')) {
                 $this->variables = $this->decode($variables);
             }
+            if ($application = $this->getValue('APPLICATION')) {
+                $this->application = $this->decode($application);
+            }
         }
     }
 
@@ -150,7 +162,7 @@ class Config
      */
     public function isAvailable() : bool
     {
-        return (bool)$this->getValue('APPLICATION');
+        return (bool)$this->getValue('APPLICATION_NAME');
     }
 
     /**
@@ -286,6 +298,25 @@ class Config
     }
 
     /**
+     * Returns the application definition array.
+     *
+     * This is, approximately, the .platform.app.yaml file as a nested array.  However, it also
+     * has other information added by Platform.sh as part of the build and deploy process.
+     *
+     * @return array
+     *   The application definition array.
+     */
+    public function application() : array
+    {
+        if (!$this->isAvailable()) {
+            throw new \RuntimeException('You are not running on Platform.sh, so the application definition are not available.');
+        }
+
+        return $this->application;
+
+    }
+
+    /**
      * Determines if the current environment is a Platform.sh Enterprise environment.
      *
      * @return bool
@@ -342,7 +373,7 @@ class Config
      * @return mixed
      *   An associative array (if representing a JSON object), or a scalar type.
      */
-    private function decode($variable)
+    protected function decode($variable)
     {
         $result = json_decode(base64_decode($variable), true);
         if (json_last_error()) {
