@@ -96,7 +96,7 @@ class Config
      *
      * @var array
      */
-    protected $routes = [];
+    protected $routesDef = [];
 
     /**
      * The relationships definition array.
@@ -105,7 +105,7 @@ class Config
      *
      * @var array
      */
-    protected $relationships = [];
+    protected $relationshipsDef = [];
 
     /**
      * The variables definition array.
@@ -114,7 +114,7 @@ class Config
      *
      * @var array
      */
-    protected $variables = [];
+    protected $variablesDef = [];
 
     /**
      * The application definition array.
@@ -123,7 +123,7 @@ class Config
      *
      * @var array
      */
-    protected $application = [];
+    protected $applicationDef = [];
 
     /**
      * Constructs a Config object.
@@ -140,16 +140,16 @@ class Config
 
         if ($this->isValidPlatform()) {
             if (!$this->inBuild() && $routes = $this->getValue('ROUTES')) {
-                $this->routes = $this->decode($routes);
+                $this->routesDef = $this->decode($routes);
             }
             if (!$this->inBuild() && $relationships = $this->getValue('RELATIONSHIPS')) {
-                $this->relationships = $this->decode($relationships);
+                $this->relationshipsDef = $this->decode($relationships);
             }
             if ($variables = $this->getValue('VARIABLES')) {
-                $this->variables = $this->decode($variables);
+                $this->variablesDef = $this->decode($variables);
             }
             if ($application = $this->getValue('APPLICATION')) {
-                $this->application = $this->decode($application);
+                $this->applicationDef = $this->decode($application);
             }
         }
     }
@@ -204,14 +204,14 @@ class Config
             throw new \RuntimeException('Relationships are not available during the build phase.');
         }
 
-        if (empty($this->relationships[$relationship])) {
+        if (empty($this->relationshipsDef[$relationship])) {
             throw new \InvalidArgumentException(sprintf('No relationship defined: %s.  Check your .platform.app.yaml file.', $relationship));
         }
-        if (empty($this->relationships[$relationship][$index])) {
+        if (empty($this->relationshipsDef[$relationship][$index])) {
             throw new \InvalidArgumentException(sprintf('No index %d defined for relationship: %s.  Check your .platform.app.yaml file.', $index, $relationship));
         }
 
-        return $this->relationships[$relationship][$index];
+        return $this->relationshipsDef[$relationship][$index];
     }
 
     /**
@@ -234,7 +234,7 @@ class Config
             return $default;
         }
 
-        return $this->variables[$name] ?? $default;
+        return $this->variablesDef[$name] ?? $default;
     }
 
     /**
@@ -252,7 +252,7 @@ class Config
             throw new \RuntimeException('You are not running on Platform.sh, so the variables array is not available.');
         }
 
-        return $this->variables;
+        return $this->variablesDef;
     }
 
     /**
@@ -273,7 +273,7 @@ class Config
             throw new \RuntimeException('Routes are not available during the build phase.');
         }
 
-        return $this->routes;
+        return $this->routesDef;
     }
 
     /**
@@ -312,8 +312,7 @@ class Config
             throw new \RuntimeException('You are not running on Platform.sh, so the application definition are not available.');
         }
 
-        return $this->application;
-
+        return $this->applicationDef;
     }
 
     /**
