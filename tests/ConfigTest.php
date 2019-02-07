@@ -257,6 +257,12 @@ class ConfigTest extends TestCase
         $env = $this->mockEnvironmentBuild;
         $config = new Config($env);
 
+        $this->assertTrue(isset($config->appDir));
+        $this->assertTrue(isset($config->applicationName));
+        $this->assertTrue(isset($config->project));
+        $this->assertTrue(isset($config->treeId));
+        $this->assertTrue(isset($config->entropy));
+
         $this->assertEquals('/app', $config->appDir);
         $this->assertEquals('app', $config->applicationName);
         $this->assertEquals('test-project', $config->project);
@@ -269,11 +275,23 @@ class ConfigTest extends TestCase
         $env = $this->mockEnvironmentDeploy;
         $config = new Config($env);
 
+        $this->assertTrue(isset($config->appDir));
+        $this->assertTrue(isset($config->applicationName));
+        $this->assertTrue(isset($config->project));
+        $this->assertTrue(isset($config->treeId));
+        $this->assertTrue(isset($config->entropy));
+
+        $this->assertTrue(isset($config->branch));
+        $this->assertTrue(isset($config->environment));
+        $this->assertTrue(isset($config->documentRoot));
+        $this->assertTrue(isset($config->smtpHost));
+
         $this->assertEquals('/app', $config->appDir);
         $this->assertEquals('app', $config->applicationName);
         $this->assertEquals('test-project', $config->project);
         $this->assertEquals('abc123', $config->treeId);
         $this->assertEquals('def789', $config->entropy);
+
         $this->assertEquals('feature-x', $config->branch);
         $this->assertEquals('feature-x-hgi456', $config->environment);
         $this->assertEquals('/app/web', $config->documentRoot);
@@ -287,6 +305,8 @@ class ConfigTest extends TestCase
         $env = $this->mockEnvironmentBuild;
         $config = new Config($env);
 
+        $this->assertFalse(isset($config->branch));
+
         $branch = $config->branch;
     }
 
@@ -297,6 +317,8 @@ class ConfigTest extends TestCase
         $env = $this->mockEnvironmentBuild;
         $config = new Config($env);
 
+        $this->assertFalse(isset($config->missing));
+
         $branch = $config->missing;
     }
 
@@ -306,6 +328,8 @@ class ConfigTest extends TestCase
 
         $env = $this->mockEnvironmentDeploy;
         $config = new Config($env);
+
+        $this->assertFalse(isset($config->missing));
 
         $branch = $config->missing;
     }

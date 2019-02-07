@@ -421,6 +421,21 @@ class Config
      */
     public function __isset($property)
     {
-        return isset($this->environmentVariables[$this->getVariableName($property)]);
+        if (!$this->isAvailable()) {
+            return false;
+        }
+
+        $isBuildVar = in_array($property, array_keys($this->directVariables));
+        $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
+
+        if ($this->inBuild()) {
+            return $isBuildVar && !is_null($this->$property);
+        }
+
+        if ($isBuildVar || $isRuntimeVar) {
+            return true && !is_null($this->$property);
+        }
+
+        return false;
     }
 }
