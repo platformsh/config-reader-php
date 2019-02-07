@@ -41,26 +41,18 @@ namespace Platformsh\ConfigReader;
  *   The hostname of the Platform.sh default SMTP server (an empty string if
  *   emails are disabled on the environment).
  *
- * ## Deprecated, remove.
- *
- * @property-read array $application
- *   The application's configuration, as defined in the .platform.app.yaml file.
- * @property-read array  $relationships
- *   The environment's relationships to other services. The keys are the name of
- *   the relationship (as configured for the application), and the values are
- *   arrays of relationship instances. For example, the hostname of a 'mysql'
- *   relationship may be stored in $config->relationships['mysql'][0]['host'].
- * @property-read array  $routes
- *   The routes configured for the environment.
- * @property-read array  $variables
- *   Custom environment variables.
  */
 class Config
 {
-    private $config = [];
-    private $environmentVariables = [];
-    private $envPrefix = '';
 
+    /**
+     * Local index of the variables that can be accessed as direct properties (build and runtime).
+     *
+     * The key is the property that will be read.  The value is the environment variable, minus
+     * prefix, that contains the value to look up.
+     *
+     * @var array
+     */
     protected $directVariables = [
         'project' => 'PROJECT',
         'appDir' => 'APP_DIR',
@@ -69,12 +61,33 @@ class Config
         'entropy' => 'PROJECT_ENTROPY',
     ];
 
+    /**
+     * Local index of the variables that can be accessed as direct properties (runtime only).
+     *
+     * The key is the property that will be read.  The value is the environment variable, minus
+     * prefix, that contains the value to look up.
+     *
+     * @var array
+     */
     protected $directVariablesRuntime = [
         'branch' => 'BRANCH',
         'environment' => 'ENVIRONMENT',
         'documentRoot' => 'DOCUMENT_ROOT',
         'smtpHost' => 'SMTP_HOST',
     ];
+
+    /**
+     * A local copy of all environment variables as of when the object was initialized.
+     * @var array
+     */
+    private $environmentVariables = [];
+
+    /**
+     * The vendor prefix for all environment variables we care about.
+     *
+     * @var string
+     */
+    private $envPrefix = '';
 
     /**
      * The routes definition array.
@@ -108,13 +121,13 @@ class Config
      *
      * @param array|null  $environmentVariables
      *   The environment variables to read. Defaults to the current environment.
-     * @param string|null $envPrefix
+     * @param string $envPrefix
      *   The prefix for environment variables. Defaults to 'PLATFORM_'.
      */
-    public function __construct(array $environmentVariables = null, string $envPrefix = null)
+    public function __construct(array $environmentVariables = null, string $envPrefix = 'PLATFORM_')
     {
         $this->environmentVariables = $environmentVariables ?? getenv();
-        $this->envPrefix = $envPrefix ?? 'PLATFORM_';
+        $this->envPrefix = $envPrefix;
 
         if ($this->isAvailable()) {
             if (!$this->inBuild() && $routes = $this->getValue('ROUTES')) {
@@ -339,40 +352,6 @@ class Config
         }
 
         return $result;
-    }
-
-    /**
-     * Determines whether a variable needs to be decoded.
-     *
-     * @param string $property
-     *   The property name.
-     *
-     * @return bool
-     *   True if the variable is base64- and JSON-encoded, false otherwise.
-     */
-    private function shouldDecode($property)
-    {
-        return in_array(strtolower($property), [
-            'application',
-            'relationships',
-            'routes',
-            'variables',
-        ]
-        );
-    }
-
-    /**
-     * Get the name of an environment variable.
-     *
-     * @param string $property
-     *   The property name, e.g. 'relationships'.
-     *
-     * @return string
-     *   The environment variable name, e.g. PLATFORM_RELATIONSHIPS.
-     */
-    private function getVariableName($property)
-    {
-        return $this->envPrefix . strtoupper($property);
     }
 
     /**
