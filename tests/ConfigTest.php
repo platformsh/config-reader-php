@@ -344,7 +344,7 @@ class ConfigTest extends TestCase
         $this->assertEquals('php:7.2', $app['type']);
     }
 
-    public function testInvalidJson()
+    public function test_invalid_json_throws() : void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Error decoding JSON, code: 4');
@@ -356,7 +356,7 @@ class ConfigTest extends TestCase
         ]);
     }
 
-    public function testCustomPrefix()
+    public function test_custom_prefix_works() : void
     {
         $config = new Config(['FAKE_APPLICATION_NAME' => 'test-application'], 'FAKE_');
         $this->assertTrue($config->isValidPlatform());
@@ -367,7 +367,7 @@ class ConfigTest extends TestCase
      *
      * @return string
      */
-    protected function encode($value)
+    protected function encode($value) : string
     {
         return base64_encode(json_encode($value));
     }
