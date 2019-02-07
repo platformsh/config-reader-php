@@ -126,7 +126,7 @@ class Config
     protected $application = [];
 
     /**
-     * Constructs a ConfigReader object.
+     * Constructs a Config object.
      *
      * @param array|null  $environmentVariables
      *   The environment variables to read. Defaults to the current environment.
