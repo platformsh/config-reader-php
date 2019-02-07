@@ -42,7 +42,6 @@ class ConfigTest extends TestCase
         $env = array_merge($env, $envRuntime);
 
         $this->mockEnvironmentDeploy = $env;
-
     }
 
     protected function loadJsonFile(string $name) : array
@@ -253,33 +252,62 @@ class ConfigTest extends TestCase
         $this->assertEquals('someval', $vars['somevar']);
     }
 
-    public function testConfig()
+    public function test_build_property_in_build_exists() : void
     {
-        //$this->expectException(\Exception::class);
-        //$this->expectExceptionMessage('Error decoding JSON');
+        $env = $this->mockEnvironmentBuild;
+        $config = new Config($env);
 
-        $mockEnv = [
-            'PLATFORM_PROJECT' => 'test-project',
-            'PLATFORM_ENVIRONMENT' => 'test-environment',
-            'PLATFORM_APPLICATION' => $this->encode(['type' => 'php:7.0']),
-            'PLATFORM_RELATIONSHIPS' => $this->encode([
-                'database' => [0 => ['host' => '127.0.0.1']],
-            ]),
-            'PLATFORM_NEW' => 'some-new-variable',
-        ];
-
-        $config = new Config($mockEnv);
-
-        $this->assertTrue($config->isAvailable());
-        $this->assertEquals('php:7.0', $config->application['type']);
+        $this->assertEquals('/app', $config->appDir);
+        $this->assertEquals('app', $config->applicationName);
         $this->assertEquals('test-project', $config->project);
+        $this->assertEquals('abc123', $config->treeId);
+        $this->assertEquals('def789', $config->entropy);
+    }
 
-        $this->assertTrue(isset($config->relationships));
-        $this->assertTrue(isset($config->relationships['database'][0]));
-        $this->assertEquals('127.0.0.1', $config->relationships['database'][0]['host']);
+    public function test_build_and_deploy_properties_in_deploy_exists() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
 
-        /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertEquals('some-new-variable', $config->new);
+        $this->assertEquals('/app', $config->appDir);
+        $this->assertEquals('app', $config->applicationName);
+        $this->assertEquals('test-project', $config->project);
+        $this->assertEquals('abc123', $config->treeId);
+        $this->assertEquals('def789', $config->entropy);
+        $this->assertEquals('feature-x', $config->branch);
+        $this->assertEquals('feature-x-hgi456', $config->environment);
+        $this->assertEquals('/app/web', $config->documentRoot);
+        $this->assertEquals('1.2.3.4', $config->smtpHost);
+    }
+
+    public function test_deploy_property_in_build_throws() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $env = $this->mockEnvironmentBuild;
+        $config = new Config($env);
+
+        $branch = $config->branch;
+    }
+
+    public function test_missing_property_throws_in_build() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $env = $this->mockEnvironmentBuild;
+        $config = new Config($env);
+
+        $branch = $config->missing;
+    }
+
+    public function test_missing_property_throws_in_deploy() : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $branch = $config->missing;
     }
 
     public function testInvalidJson()

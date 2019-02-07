@@ -14,24 +14,36 @@ namespace Platformsh\ConfigReader;
  * isset($config->variableName) or !empty($config->variableName). Attempting to
  * access a nonexistent variable will throw an exception.
  *
+ * // These properties are available at build time and run time.
+ *
  * @property-read string $project
  *   The project ID.
- * @property-read string $environment
- *   The environment ID (usually the Git branch name).
- * @property-read string $application_name
+ * @property-read string $applicationName
  *   The name of the application, as defined in its configuration.
- * @property-read string $tree_id
+ * @property-read string $treeId
  *   An ID identifying the application tree before it was built: a unique hash
  *   is generated based on the contents of the application's files in the
  *   repository.
- * @property-read string $app_dir
+ * @property-read string $appDir
  *   The absolute path to the application.
- * @property-read string $document_root
+ * @property-read string $entropy
+ *   A random string generated for each project, useful for generating has keys.
+ *
+ * // These properties are only available at runtime.
+ *
+ * @property-read string $branch
+ *   The Git branch name.
+ * @property-read string $environment
+ *   The environment ID (usually the Git branch plus a hash).
+ * @property-read string $documentRoot
  *   The absolute path to the web root of the application.
- * @property-read string $mode
- *   The hosting mode (this will only be set on Platform.sh Enterprise, and it
- *   will have the value 'enterprise').
- * @property-read array  $application
+ * @property-read string $smtpHost
+ *   The hostname of the Platform.sh default SMTP server (an empty string if
+ *   emails are disabled on the environment).
+ *
+ * ## Deprecated, remove.
+ *
+ * @property-read array $application
  *   The application's configuration, as defined in the .platform.app.yaml file.
  * @property-read array  $relationships
  *   The environment's relationships to other services. The keys are the name of
@@ -42,15 +54,27 @@ namespace Platformsh\ConfigReader;
  *   The routes configured for the environment.
  * @property-read array  $variables
  *   Custom environment variables.
- * @property-read string $smtp_host
- *   The hostname of the Platform.sh default SMTP server (an empty string if
- *   emails are disabled on the environment).
  */
 class Config
 {
     private $config = [];
     private $environmentVariables = [];
     private $envPrefix = '';
+
+    protected $directVariables = [
+        'project' => 'PROJECT',
+        'appDir' => 'APP_DIR',
+        'applicationName' => 'APPLICATION_NAME',
+        'treeId' => 'TREE_ID',
+        'entropy' => 'PROJECT_ENTROPY',
+    ];
+
+    protected $directVariablesRuntime = [
+        'branch' => 'BRANCH',
+        'environment' => 'ENVIRONMENT',
+        'documentRoot' => 'DOCUMENT_ROOT',
+        'smtpHost' => 'SMTP_HOST',
+    ];
 
     /**
      * The routes definition array.
@@ -290,7 +314,7 @@ class Config
      */
     protected function getValue(string $name) : ?string
     {
-        $checkName = $this->envPrefix . $name;
+        $checkName = $this->envPrefix . strtoupper($name);
         return $this->environmentVariables[$checkName] ?? null;
     }
 
@@ -365,19 +389,25 @@ class Config
      */
     public function __get($property)
     {
-        $variableName = $this->getVariableName($property);
-        if (!isset($this->config[$variableName])) {
-            if (!array_key_exists($variableName, $this->environmentVariables)) {
-                throw new \Exception(sprintf('Environment variable not found: %s', $variableName));
-            }
-            $value = $this->environmentVariables[$variableName];
-            if ($this->shouldDecode($property)) {
-                $value = $this->decode($value);
-            }
-            $this->config[$variableName] = $value;
+        if (!$this->isAvailable()) {
+            throw new \RuntimeException(sprintf('You are not running on Platform.sh, so the %s variable are not available.', $property));
         }
 
-        return $this->config[$variableName];
+        $isBuildVar = in_array($property, array_keys($this->directVariables));
+        $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
+
+        if ($this->inBuild() && $isRuntimeVar) {
+            throw new \InvalidArgumentException(sprintf('The %s variable is not available during build time.', $property));
+        }
+
+        if ($isBuildVar) {
+            return $this->getValue($this->directVariables[$property]);
+        }
+        if ($isRuntimeVar) {
+            return $this->getValue($this->directVariablesRuntime[$property]);
+        }
+
+        throw new \InvalidArgumentException(sprintf('No such variable defined: %s', $property));
     }
 
     /**
