@@ -80,14 +80,14 @@ class Config
      * A local copy of all environment variables as of when the object was initialized.
      * @var array
      */
-    private $environmentVariables = [];
+    protected $environmentVariables = [];
 
     /**
      * The vendor prefix for all environment variables we care about.
      *
      * @var string
      */
-    private $envPrefix = '';
+    protected $envPrefix = '';
 
     /**
      * The routes definition array.
