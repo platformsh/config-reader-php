@@ -257,34 +257,23 @@ class ConfigTest extends TestCase
         $env = $this->mockEnvironmentBuild;
         $config = new Config($env);
 
-        $this->assertTrue(isset($config->appDir));
-        $this->assertTrue(isset($config->applicationName));
-        $this->assertTrue(isset($config->project));
-        $this->assertTrue(isset($config->treeId));
-        $this->assertTrue(isset($config->entropy));
-
         $this->assertEquals('/app', $config->appDir);
         $this->assertEquals('app', $config->applicationName);
         $this->assertEquals('test-project', $config->project);
         $this->assertEquals('abc123', $config->treeId);
         $this->assertEquals('def789', $config->entropy);
+
+        $this->assertTrue(isset($config->appDir));
+        $this->assertTrue(isset($config->applicationName));
+        $this->assertTrue(isset($config->project));
+        $this->assertTrue(isset($config->treeId));
+        $this->assertTrue(isset($config->entropy));
     }
 
     public function test_build_and_deploy_properties_in_deploy_exists() : void
     {
         $env = $this->mockEnvironmentDeploy;
         $config = new Config($env);
-
-        $this->assertTrue(isset($config->appDir));
-        $this->assertTrue(isset($config->applicationName));
-        $this->assertTrue(isset($config->project));
-        $this->assertTrue(isset($config->treeId));
-        $this->assertTrue(isset($config->entropy));
-
-        $this->assertTrue(isset($config->branch));
-        $this->assertTrue(isset($config->environment));
-        $this->assertTrue(isset($config->documentRoot));
-        $this->assertTrue(isset($config->smtpHost));
 
         $this->assertEquals('/app', $config->appDir);
         $this->assertEquals('app', $config->applicationName);
@@ -296,6 +285,21 @@ class ConfigTest extends TestCase
         $this->assertEquals('feature-x-hgi456', $config->environment);
         $this->assertEquals('/app/web', $config->documentRoot);
         $this->assertEquals('1.2.3.4', $config->smtpHost);
+        $this->assertEquals('8080', $config->port);
+        $this->assertEquals('unix://tmp/blah.sock', $config->socket);
+
+        $this->assertTrue(isset($config->appDir));
+        $this->assertTrue(isset($config->applicationName));
+        $this->assertTrue(isset($config->project));
+        $this->assertTrue(isset($config->treeId));
+        $this->assertTrue(isset($config->entropy));
+
+        $this->assertTrue(isset($config->branch));
+        $this->assertTrue(isset($config->environment));
+        $this->assertTrue(isset($config->documentRoot));
+        $this->assertTrue(isset($config->smtpHost));
+        $this->assertTrue(isset($config->port));
+        $this->assertTrue(isset($config->socket));
     }
 
     public function test_deploy_property_in_build_throws() : void

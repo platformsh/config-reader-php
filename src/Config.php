@@ -40,6 +40,10 @@ namespace Platformsh\ConfigReader;
  * @property-read string $smtpHost
  *   The hostname of the Platform.sh default SMTP server (an empty string if
  *   emails are disabled on the environment).
+ * @property-read string $port
+ *   The TCP port number the application should listen to for incoming requests.
+ * @property-read string $socket
+ *   The Unix socket the application should listen to for incoming requests.
  *
  */
 class Config
@@ -74,6 +78,11 @@ class Config
         'environment' => 'ENVIRONMENT',
         'documentRoot' => 'DOCUMENT_ROOT',
         'smtpHost' => 'SMTP_HOST',
+    ];
+
+    protected $unPrefixedVariablesRuntime = [
+        'port' => 'PORT',
+        'socket' => 'SOCKET',
     ];
 
     /**
@@ -404,6 +413,9 @@ class Config
 
         $isBuildVar = in_array($property, array_keys($this->directVariables));
         $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
+        // For now, all unprefixed variables are also runtime variables.  If that ever changes this
+        // logic will change with it.
+        $isUnprefixedVar = in_array($property, array_keys($this->unPrefixedVariablesRuntime));
 
         if ($this->inBuild() && $isRuntimeVar) {
             throw new \InvalidArgumentException(sprintf('The %s variable is not available during build time.', $property));
@@ -411,6 +423,9 @@ class Config
 
         if ($isBuildVar) {
             return $this->getValue($this->directVariables[$property]);
+        }
+        if ($isUnprefixedVar) {
+            return $this->environmentVariables[$this->unPrefixedVariablesRuntime[$property]] ?? null;
         }
         if ($isRuntimeVar) {
             return $this->getValue($this->directVariablesRuntime[$property]);
@@ -436,13 +451,16 @@ class Config
 
         $isBuildVar = in_array($property, array_keys($this->directVariables));
         $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
+        // For now, all unprefixed variables are also runtime variables.  If that ever changes this
+        // logic will change with it.
+        $isUnprefixedVar = in_array($property, array_keys($this->unPrefixedVariablesRuntime));
 
         if ($this->inBuild()) {
             return $isBuildVar && !is_null($this->$property);
         }
 
-        if ($isBuildVar || $isRuntimeVar) {
-            return true && !is_null($this->$property);
+        if ($isBuildVar || $isRuntimeVar || $isUnprefixedVar) {
+            return !is_null($this->$property);
         }
 
         return false;
