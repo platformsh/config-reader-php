@@ -84,6 +84,20 @@ class ConfigTest extends TestCase
         $this->assertFalse($config->inBuild());
     }
 
+    public function test_inruntime_in_runtime_is_true() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $this->assertTrue($config->inRuntime());
+    }
+
+    public function test_inruntime_in_build_phase_is_false() : void
+    {
+        $config = new Config($this->mockEnvironmentBuild);
+
+        $this->assertFalse($config->inRuntime());
+    }
+
     public function test_load_routes_in_runtime_works() : void
     {
         $config = new Config($this->mockEnvironmentDeploy);

@@ -187,6 +187,16 @@ class Config
     }
 
     /**
+     * Checks whether the code is running in a runtime environment.
+     *
+     * @return bool
+     */
+    public function inRuntime() : bool
+    {
+        return $this->isValidPlatform() && $this->getValue('ENVIRONMENT');
+    }
+
+    /**
      * Retrieves the credentials for accessing a relationship.
      *
      * The relationship must be defined in the .platform.app.yaml file.
