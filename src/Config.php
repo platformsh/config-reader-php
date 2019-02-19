@@ -27,7 +27,7 @@ namespace Platformsh\ConfigReader;
  * @property-read string $appDir
  *   The absolute path to the application.
  * @property-read string $entropy
- *   A random string generated for each project, useful for generating has keys.
+ *   A random string generated for each project, useful for generating hash keys.
  *
  * // These properties are only available at runtime.
  *
@@ -296,6 +296,11 @@ class Config
     }
 
     /**
+     * Returns a single route definition.
+     *
+     * Note: If no route ID was specified in routes.yaml then it will not be possible
+     * to look up a route by ID.
+     *
      * @param string $id
      *   The ID of the route to load.
      * @return array
