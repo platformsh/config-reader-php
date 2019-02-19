@@ -148,10 +148,10 @@ class Config
         $this->envPrefix = $envPrefix;
 
         if ($this->isValidPlatform()) {
-            if (!$this->inBuild() && $routes = $this->getValue('ROUTES')) {
+            if ($this->inRuntime() && $routes = $this->getValue('ROUTES')) {
                 $this->routesDef = $this->decode($routes);
             }
-            if (!$this->inBuild() && $relationships = $this->getValue('RELATIONSHIPS')) {
+            if ($this->inRuntime() && $relationships = $this->getValue('RELATIONSHIPS')) {
                 $this->relationshipsDef = $this->decode($relationships);
             }
             if ($variables = $this->getValue('VARIABLES')) {
@@ -358,7 +358,7 @@ class Config
      */
     public function onProduction() : bool
     {
-        if (!$this->isValidPlatform() && !$this->inBuild()) {
+        if (!$this->inRuntime()) {
             false;
         }
 
