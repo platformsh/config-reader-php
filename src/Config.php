@@ -333,7 +333,7 @@ class Config
     public function application() : array
     {
         if (!$this->isValidPlatform()) {
-            throw new \RuntimeException('You are not running on Platform.sh, so the application definition are not available.');
+            throw new \RuntimeException('You are not running on Platform.sh, so the application definition is not available.');
         }
 
         return $this->applicationDef;
