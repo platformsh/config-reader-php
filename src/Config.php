@@ -364,7 +364,7 @@ class Config
     public function onProduction() : bool
     {
         if (!$this->inRuntime()) {
-            false;
+            return false;
         }
 
         $prodBranch = $this->onEnterprise() ? 'production' : 'master';
