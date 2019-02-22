@@ -255,13 +255,13 @@ class ConfigTest extends TestCase
         $this->assertEquals('app', $config->applicationName);
         $this->assertEquals('test-project', $config->project);
         $this->assertEquals('abc123', $config->treeId);
-        $this->assertEquals('def789', $config->entropy);
+        $this->assertEquals('def789', $config->projectEntropy);
 
         $this->assertTrue(isset($config->appDir));
         $this->assertTrue(isset($config->applicationName));
         $this->assertTrue(isset($config->project));
         $this->assertTrue(isset($config->treeId));
-        $this->assertTrue(isset($config->entropy));
+        $this->assertTrue(isset($config->projectEntropy));
     }
 
     public function test_build_and_deploy_properties_in_deploy_exists() : void
@@ -273,7 +273,7 @@ class ConfigTest extends TestCase
         $this->assertEquals('app', $config->applicationName);
         $this->assertEquals('test-project', $config->project);
         $this->assertEquals('abc123', $config->treeId);
-        $this->assertEquals('def789', $config->entropy);
+        $this->assertEquals('def789', $config->projectEntropy);
 
         $this->assertEquals('feature-x', $config->branch);
         $this->assertEquals('feature-x-hgi456', $config->environment);
@@ -286,7 +286,7 @@ class ConfigTest extends TestCase
         $this->assertTrue(isset($config->applicationName));
         $this->assertTrue(isset($config->project));
         $this->assertTrue(isset($config->treeId));
-        $this->assertTrue(isset($config->entropy));
+        $this->assertTrue(isset($config->projectEntropy));
 
         $this->assertTrue(isset($config->branch));
         $this->assertTrue(isset($config->environment));

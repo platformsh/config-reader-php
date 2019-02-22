@@ -26,7 +26,7 @@ namespace Platformsh\ConfigReader;
  *   repository.
  * @property-read string $appDir
  *   The absolute path to the application.
- * @property-read string $entropy
+ * @property-read string $projectEntropy
  *   A random string generated for each project, useful for generating hash keys.
  *
  * // These properties are only available at runtime.
@@ -62,7 +62,7 @@ class Config
         'appDir' => 'APP_DIR',
         'applicationName' => 'APPLICATION_NAME',
         'treeId' => 'TREE_ID',
-        'entropy' => 'PROJECT_ENTROPY',
+        'projectEntropy' => 'PROJECT_ENTROPY',
     ];
 
     /**
