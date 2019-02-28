@@ -360,6 +360,30 @@ class ConfigTest extends TestCase
         $this->assertTrue($config->isValidPlatform());
     }
 
+    public function test_formattedCredentials_throws_when_no_formatter_defined() : void
+    {
+        $this->expectException(NoCredentialFormatterFoundException::class);
+
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $config->formattedCredentials('database', 'not-defined');
+    }
+
+    public function test_formattedCredentials_calls_a_formatter() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $config->registerFormatter('test', function(array $credentials) {
+            return 'called';
+        });
+
+        $formatted = $config->formattedCredentials('database', 'test');
+
+        $this->assertEquals('called', $formatted);
+    }
+
     /**
      * @param mixed $value
      *

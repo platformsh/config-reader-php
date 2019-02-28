@@ -135,6 +135,13 @@ class Config
     protected $applicationDef = [];
 
     /**
+     * A map of formatter name strings to callable formatters.
+     *
+     * @var array
+     */
+    protected $credentialFormatters = [];
+
+    /**
      * Constructs a Config object.
      *
      * @param array|null  $environmentVariables
@@ -370,6 +377,49 @@ class Config
         $prodBranch = $this->onEnterprise() ? 'production' : 'master';
 
         return $this->getValue('BRANCH') == $prodBranch;
+    }
+
+    /**
+     * Adds a credential formatter to the configuration.
+     *
+     * A credential formatter is responsible for formatting the credentials for a relationship
+     * in a way expected by a particular client library.  For instance, it can take the credentials
+     * from Platform.sh for a PostgreSQL database and format them into a URL string expected by
+     * PDO.  Use the formattedCredentials() method to get the formatted version of a particular
+     * relationship.
+     *
+     * @param {string} name
+     *   The name of the formatter.  This may be any arbitrary alphanumeric string.
+     * @param {registerFormatterCallback} formatter
+     *   A callback function that will format relationship credentials for a specific client library.
+     * @return {Config}
+     *   The called object, for chaining.
+     */
+    public function registerFormatter(string $name, callable $formatter) : self
+    {
+        $this->credentialFormatters[$name] = $formatter;
+        return $this;
+    }
+
+    /**
+     * Returns credentials for the specified relationship as formatted by the specified formatter.
+     *
+     * @param string relationship
+     *   The relationship whose credentials should be formatted.
+     * @param string formatter
+     *   The registered formatter to use.  This must match a formatter previously registered
+     *   with registerFormatter().
+     * @return mixed
+     *   The credentials formatted with the given formatter.
+     * @throws NoCredentialFormatterFoundException
+     */
+    public function formattedCredentials(string $relationship, string $formatter)
+    {
+        if (empty($this->credentialFormatters[$formatter])) {
+            throw new NoCredentialFormatterFoundException(sprintf('There is no credential formatter named "%s" registered. Did you remember to call registerFormatter()?', $formatter));
+        }
+
+        return $this->credentialFormatters[$formatter]($this->credentials($relationship));
     }
 
     /**
