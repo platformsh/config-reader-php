@@ -109,7 +109,7 @@ class ConfigTest extends TestCase
 
     public function test_load_routes_in_build_fails() : void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(BuildTimeVariableAccessException::class);
 
         $config = new Config($this->mockEnvironmentBuild);
         $routes = $config->routes();
@@ -298,7 +298,7 @@ class ConfigTest extends TestCase
 
     public function test_deploy_property_in_build_throws() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(BuildTimeVariableAccessException::class);
 
         $env = $this->mockEnvironmentBuild;
         $config = new Config($env);

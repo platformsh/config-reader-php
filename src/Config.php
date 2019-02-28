@@ -220,19 +220,19 @@ class Config
      *   for future extension.
      * @return array
      *   The credentials array for the service pointed to by the relationship.
-     * @throws \RuntimeException
-     *   Thrown if called in a context that has no relationships (eg, in build)
+     * @throws BuildTimeVariableAccessException
+     *   Thrown if called in a in the build phase, where relationships are not defined.
      * @throws \InvalidArgumentException
      *   If the relationship/index pair requested does not exist.
      */
     public function credentials(string $relationship, int $index = 0) : array
     {
         if (!$this->isValidPlatform()) {
-            throw new \RuntimeException('You are not running on Platform.sh, so relationships are not available.');
+            throw new NotValidPlatformException('You are not running on Platform.sh, so relationships are not available.');
         }
 
         if ($this->inBuild()) {
-            throw new \RuntimeException('Relationships are not available during the build phase.');
+            throw new BuildTimeVariableAccessException('Relationships are not available during the build phase.');
         }
 
         if (empty($this->relationshipsDef[$relationship])) {
@@ -280,7 +280,7 @@ class Config
     public function variables() : array
     {
         if (!$this->isValidPlatform()) {
-            throw new \RuntimeException('You are not running on Platform.sh, so the variables array is not available.');
+            throw new NotValidPlatformException('You are not running on Platform.sh, so the variables array is not available.');
         }
 
         return $this->variablesDef;
@@ -291,17 +291,17 @@ class Config
      *
      * @return array
      *   The routes array, in PHP nested array form.
-     * @throws \RuntimeException
+     * @throws BuildTimeVariableAccessException
      *   If the routes are not accessible due to being in the wrong environment.
      */
     public function routes() : array
     {
         if (!$this->isValidPlatform()) {
-            throw new \RuntimeException('You are not running on Platform.sh, so routes are not available.');
+            throw new NotValidPlatformException('You are not running on Platform.sh, so routes are not available.');
         }
 
         if ($this->inBuild()) {
-            throw new \RuntimeException('Routes are not available during the build phase.');
+            throw new BuildTimeVariableAccessException('Routes are not available during the build phase.');
         }
 
         return $this->routesDef;
@@ -345,7 +345,7 @@ class Config
     public function application() : array
     {
         if (!$this->isValidPlatform()) {
-            throw new \RuntimeException('You are not running on Platform.sh, so the application definition is not available.');
+            throw new NotValidPlatformException('You are not running on Platform.sh, so the application definition is not available.');
         }
 
         return $this->applicationDef;
@@ -478,7 +478,7 @@ class Config
     public function __get($property)
     {
         if (!$this->isValidPlatform()) {
-            throw new \RuntimeException(sprintf('You are not running on Platform.sh, so the %s variable are not available.', $property));
+            throw new NotValidPlatformException(sprintf('You are not running on Platform.sh, so the %s variable are not available.', $property));
         }
 
         $isBuildVar = in_array($property, array_keys($this->directVariables));
@@ -488,7 +488,7 @@ class Config
         $isUnprefixedVar = in_array($property, array_keys($this->unPrefixedVariablesRuntime));
 
         if ($this->inBuild() && $isRuntimeVar) {
-            throw new \InvalidArgumentException(sprintf('The %s variable is not available during build time.', $property));
+            throw new BuildTimeVariableAccessException(sprintf('The %s variable is not available during build time.', $property));
         }
 
         if ($isBuildVar) {
