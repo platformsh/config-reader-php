@@ -155,11 +155,16 @@ class Config
         $this->envPrefix = $envPrefix;
 
         if ($this->isValidPlatform()) {
-            if ($this->inRuntime() && $routes = $this->getValue('ROUTES')) {
-                $this->routesDef = $this->decode($routes);
-            }
-            if ($this->inRuntime() && $relationships = $this->getValue('RELATIONSHIPS')) {
-                $this->relationshipsDef = $this->decode($relationships);
+            if ($this->inRuntime()) {
+                if ($routes = $this->getValue('ROUTES')) {
+                    $this->routesDef = $this->decode($routes);
+                }
+                if ($relationships = $this->getValue('RELATIONSHIPS')) {
+                    $this->relationshipsDef = $this->decode($relationships);
+                }
+
+                $this->registerFormatter('pdo_mysql', [$this, 'pdoMySQLFormatter']);
+                $this->registerFormatter('pdo_pgsql', [$this, 'pdoPostgreSQLFormatter']);
             }
             if ($variables = $this->getValue('VARIABLES')) {
                 $this->variablesDef = $this->decode($variables);
@@ -530,4 +535,35 @@ class Config
 
         return false;
     }
+
+    /**
+     * Returns a DSN for a PDO-MySQL connection.
+     *
+     * Note that the username and password will still be needed separately in the PDO constructor.
+     *
+     * @param array $credentials
+     *   The credentials array from the relationships.
+     * @return string
+     *   A formatted PDO DSN.
+     */
+    protected function pdoMySqlFormatter(array $credentials) : string
+    {
+        return sprintf('mysql:host=%s;port=%d;dbname=%s', $credentials['host'], $credentials['port'], $credentials['path']);
+    }
+
+    /**
+     * Returns a DSN for a PDO-PostgreSQL connection.
+     *
+     * Note that the username and password will still be needed separately in the PDO constructor.
+     *
+     * @param array $credentials
+     *   The credentials array from the relationships.
+     * @return string
+     *   A formatted PDO DSN.
+     */
+    protected function pdoPostgreSqlFormatter(array $credentials) : string
+    {
+        return sprintf('pgsql:host=%s;port=%d;dbname=%s', $credentials['host'], $credentials['port'], $credentials['path']);
+    }
+
 }

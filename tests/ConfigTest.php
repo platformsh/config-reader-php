@@ -384,6 +384,16 @@ class ConfigTest extends TestCase
         $this->assertEquals('called', $formatted);
     }
 
+    public function test_pdomysql_formatter() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $formatted = $config->formattedCredentials('database', 'pdo_mysql');
+
+        $this->assertEquals('mysql:host=database.internal;port=3306;dbname=main', $formatted);
+    }
+
     /**
      * @param mixed $value
      *
