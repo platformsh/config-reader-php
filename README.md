@@ -1,6 +1,6 @@
 # Platform.sh Config Reader (PHP)
 
-This library provides a simpler, more streamlined way to interact the a Platform.sh environment.  It defines offers utility methods to access routes and relationships more cleanly than reading the raw environment variables yourself.
+This library provides a streamlined and easy to use way to interact the a Platform.sh environment.  It offers utility methods to access routes and relationships more cleanly than reading the raw environment variables yourself.
 
 This library requires PHP 7.1 or later.
 
