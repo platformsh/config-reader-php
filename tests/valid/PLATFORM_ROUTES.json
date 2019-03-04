@@ -1,0 +1,86 @@
+{
+   "https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/" : {
+      "original_url" : "https://www.{default}/",
+      "attributes" : {},
+      "type" : "upstream",
+      "restrict_robots" : false,
+      "tls" : {
+         "client_authentication" : null,
+         "min_version" : 771,
+         "client_certificate_authorities" : [],
+         "strict_transport_security" : {
+            "include_subdomains" : null,
+            "enabled" : true,
+            "preload" : null
+         }
+      },
+      "upstream" : "app",
+      "cache" : {
+         "enabled" : true,
+         "headers" : [
+            "Accept",
+            "Accept-Language"
+         ],
+         "cookies" : [
+            "/^SS?ESS.*/"
+         ],
+         "default_ttl" : 0
+      },
+      "http_access" : {
+         "addresses" : [],
+         "basic_auth" : {}
+      },
+      "primary" : true,
+      "id" : "main",
+      "ssi" : {
+         "enabled" : false
+      }
+   },
+   "http://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/" : {
+      "id" : null,
+      "to" : "https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/",
+      "primary" : false,
+      "original_url" : "http://www.{default}/",
+      "http_access" : {
+         "basic_auth" : {},
+         "addresses" : []
+      },
+      "restrict_robots" : false,
+      "type" : "redirect"
+   },
+   "https://master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/" : {
+      "id" : null,
+      "to" : "https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/",
+      "primary" : false,
+      "http_access" : {
+         "addresses" : [],
+         "basic_auth" : {}
+      },
+      "tls" : {
+         "client_authentication" : null,
+         "min_version" : null,
+         "strict_transport_security" : {
+            "include_subdomains" : null,
+            "enabled" : null,
+            "preload" : null
+         },
+         "client_certificate_authorities" : []
+      },
+      "restrict_robots" : false,
+      "type" : "redirect",
+      "attributes" : {},
+      "original_url" : "https://{default}/"
+   },
+   "http://master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/" : {
+      "to" : "https://master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/",
+      "id" : null,
+      "primary" : false,
+      "http_access" : {
+         "addresses" : [],
+         "basic_auth" : {}
+      },
+      "original_url" : "http://{default}/",
+      "type" : "redirect",
+      "restrict_robots" : false
+   }
+}

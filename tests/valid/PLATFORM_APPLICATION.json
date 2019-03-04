@@ -1,0 +1,47 @@
+{
+   "disk" : 128,
+   "size" : "AUTO",
+   "timezone" : null,
+   "mounts" : {},
+   "name" : "app",
+   "hooks" : {
+      "build" : "set -e\n",
+      "deploy" : "set -e\n",
+      "post_deploy" : null
+   },
+   "runtime" : {
+      "extensions" : [
+         "redis",
+         "pdo_pgsql",
+         "mongodb",
+         "memcached"
+      ]
+   },
+   "variables" : {},
+   "type" : "php:7.2",
+   "access" : {
+      "ssh" : "contributor"
+   },
+   "relationships" : {
+      "database" : "mysql:mysql",
+      "elasticsearch" : "elasticsearch:elasticsearch"
+   },
+   "preflight" : {
+      "ignored_rules" : [],
+      "enabled" : true
+   },
+   "web" : {
+      "locations" : {
+         "/" : {
+            "headers" : {},
+            "passthru" : "/index.php",
+            "allow" : true,
+            "rules" : {},
+            "scripts" : true,
+            "expires" : "-1s",
+            "root" : "web"
+         }
+      },
+      "move_to_root" : false
+   }
+}

@@ -1,0 +1,42 @@
+{
+   "database" : [
+      {
+         "scheme" : "mysql",
+         "cluster" : "dtsla3sy7euhc-master-7rqtwti",
+         "service" : "mysql",
+         "username" : "user",
+         "password" : "",
+         "host" : "database.internal",
+         "path" : "main",
+         "public" : false,
+         "fragment" : null,
+         "ip" : "169.254.81.252",
+         "query" : {
+            "is_master" : true
+         },
+         "rel" : "mysql",
+         "type" : "mysql:10.2",
+         "port" : 3306,
+         "hostname" : "ihq65cmi2m7nd3svqpcrbjchyy.mysql.service._.us-2.platformsh.site"
+      }
+   ],
+   "elasticsearch" : [
+      {
+         "hostname" : "bwhgfsnjp7kzqlf7pd35dfg6mm.elasticsearch.service._.us-2.platformsh.site",
+         "port" : 9200,
+         "type" : "elasticsearch:5.4",
+         "rel" : "elasticsearch",
+         "query" : {},
+         "ip" : "169.254.250.214",
+         "path" : null,
+         "public" : false,
+         "fragment" : null,
+         "password" : null,
+         "host" : "elasticsearch.internal",
+         "username" : null,
+         "service" : "elasticsearch",
+         "cluster" : "dtsla3sy7euhc-master-7rqtwti",
+         "scheme" : "http"
+      }
+   ]
+}

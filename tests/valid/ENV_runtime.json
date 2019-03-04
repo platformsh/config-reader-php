@@ -1,0 +1,8 @@
+{
+    "PLATFORM_BRANCH": "feature-x",
+    "PLATFORM_ENVIRONMENT": "feature-x-hgi456",
+    "PLATFORM_DOCUMENT_ROOT": "/app/web",
+    "PLATFORM_SMTP_HOST": "1.2.3.4",
+    "PORT": "8080",
+    "SOCKET": "unix://tmp/blah.sock"
+}
