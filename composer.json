@@ -4,11 +4,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Ori Pekelman",
-            "email": "ori+github@pekelman.com"
-        },
-        {
-            "name": "Patrick Dawkins"
+            "name": "Larry Garfield",
+            "email": "larry@platform.sh"
         }
     ],
     "require": {
