@@ -428,6 +428,19 @@ class Config
     }
 
     /**
+     * Determines if a relationship is defined, and thus has credentials available.
+     *
+     * @param string $relationship
+     *   The name of the relationship to check.
+     * @return bool
+     *   True if the relationship is defined, false otherwise.
+     */
+    public function hasRelationship(string $relationship) : bool
+    {
+        return isset($this->relationshipsDef[$relationship]);
+    }
+
+    /**
      * Reads an environment variable, taking the prefix into account.
      *
      * @param string $name

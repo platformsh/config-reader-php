@@ -220,6 +220,22 @@ class ConfigTest extends TestCase
         $creds = $config->credentials('database', 3);
     }
 
+    public function test_hasRelationship_returns_true_for_existing_relationship() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $this->assertTrue($config->hasRelationship('database'));
+    }
+
+    public function test_hasRelationship_returns_false_for_missingrelationship() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        $config = new Config($env);
+
+        $this->assertFalse($config->hasRelationship('missing'));
+    }
+
     public function test_reading_existing_variable_works() : void
     {
         $env = $this->mockEnvironmentDeploy;
