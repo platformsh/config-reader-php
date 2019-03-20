@@ -113,6 +113,15 @@ $creds = $config->credentials('database');
 
 The return value of `credentials()` is an associative array matching the relationship JSON object, which includes the appropriate user, password, host, database name, and other pertinent information.  See the [Service documentation](https://docs.platform.sh/configuration/services.html) for your service for the exact structure and meaning of each property.  In most cases that information can be passed directly to whatever other client library is being used to connect to the service.
 
+To make sure that a relationship is defined before you try to access credentials out of it, use the `hasRelationship()` method:
+
+```php
+if ($config->hasRelationship('database') {
+    $creds = $conifg->credentials('database');
+    // ...
+}
+```
+
 ## Formatting service credentials
 
 In some cases the library being used to connect to a service wants its credentials formatted in a specific way; it could be a DSN string of some sort or it needs certain values concatenated to the database name, etc.  For those cases you can use "Credential Formatters".  A Credential Formatter is any `callable` (function, anonymous function, object method, etc.) that takes a credentials array and returns any type, since the library may want different types.
