@@ -393,11 +393,11 @@ class Config
      * PDO.  Use the formattedCredentials() method to get the formatted version of a particular
      * relationship.
      *
-     * @param {string} name
+     * @param string name
      *   The name of the formatter.  This may be any arbitrary alphanumeric string.
      * @param {registerFormatterCallback} formatter
      *   A callback function that will format relationship credentials for a specific client library.
-     * @return {Config}
+     * @return Config
      *   The called object, for chaining.
      */
     public function registerFormatter(string $name, callable $formatter) : self
