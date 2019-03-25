@@ -9,7 +9,7 @@ This library requires PHP 7.1 or later.
 ## Install
 
 ```bash
-composer install platformsh/config-reader
+composer require platformsh/config-reader
 ```
 
 ## Usage Example
@@ -116,7 +116,7 @@ The return value of `credentials()` is an associative array matching the relatio
 To make sure that a relationship is defined before you try to access credentials out of it, use the `hasRelationship()` method:
 
 ```php
-if ($config->hasRelationship('database') {
+if ($config->hasRelationship('database')) {
     $creds = $conifg->credentials('database');
     // ...
 }
