@@ -154,25 +154,22 @@ class Config
         $this->environmentVariables = $environmentVariables ?? getenv();
         $this->envPrefix = $envPrefix;
 
-        if ($this->isValidPlatform()) {
-            if ($this->inRuntime()) {
-                if ($routes = $this->getValue('ROUTES')) {
-                    $this->routesDef = $this->decode($routes);
-                }
-                if ($relationships = $this->getValue('RELATIONSHIPS')) {
-                    $this->relationshipsDef = $this->decode($relationships);
-                }
-
-                $this->registerFormatter('pdo_mysql', [$this, 'pdoMySQLFormatter']);
-                $this->registerFormatter('pdo_pgsql', [$this, 'pdoPostgreSQLFormatter']);
-            }
-            if ($variables = $this->getValue('VARIABLES')) {
-                $this->variablesDef = $this->decode($variables);
-            }
-            if ($application = $this->getValue('APPLICATION')) {
-                $this->applicationDef = $this->decode($application);
-            }
+        if ($routes = $this->getValue('ROUTES')) {
+            $this->routesDef = $this->decode($routes);
         }
+        if ($relationships = $this->getValue('RELATIONSHIPS')) {
+            $this->relationshipsDef = $this->decode($relationships);
+        }
+
+        if ($variables = $this->getValue('VARIABLES')) {
+        $this->variablesDef = $this->decode($variables);
+        }
+        if ($application = $this->getValue('APPLICATION')) {
+            $this->applicationDef = $this->decode($application);
+        }
+
+        $this->registerFormatter('pdo_mysql', [$this, 'pdoMySQLFormatter']);
+        $this->registerFormatter('pdo_pgsql', [$this, 'pdoPostgreSQLFormatter']);
     }
 
     /**
@@ -227,12 +224,14 @@ class Config
      */
     public function credentials(string $relationship, int $index = 0) : array
     {
-        if (!$this->isValidPlatform()) {
-            throw new NotValidPlatformException('You are not running on Platform.sh, so relationships are not available.');
-        }
 
-        if ($this->inBuild()) {
-            throw new BuildTimeVariableAccessException('Relationships are not available during the build phase.');
+        if (empty($this->relationshipsDef)) {
+            if ($this->inBuild()) {
+                throw new BuildTimeVariableAccessException('Relationships are not available during the build phase.');
+            }
+            throw new NotValidPlatformException('No relationships are defined. Are you sure you are on Platform.sh?'
+                . '  If you\'re running on your local system you may need to create a tunnel'
+                . ' to access your environment services.  See https://docs.platform.sh/gettingstarted/local/tethered.html');
         }
 
         if (empty($this->relationshipsDef[$relationship])) {
@@ -261,10 +260,6 @@ class Config
      */
     public function variable(string $name, $default = null)
     {
-        if (!$this->isValidPlatform()) {
-            return $default;
-        }
-
         return $this->variablesDef[$name] ?? $default;
     }
 
@@ -279,8 +274,8 @@ class Config
      */
     public function variables() : array
     {
-        if (!$this->isValidPlatform()) {
-            throw new NotValidPlatformException('You are not running on Platform.sh, so the variables array is not available.');
+        if (empty($this->variablesDef)) {
+            throw new NotValidPlatformException('No variables are defined.  Are you sure you are running on Platform.sh?');
         }
 
         return $this->variablesDef;
@@ -296,12 +291,11 @@ class Config
      */
     public function routes() : array
     {
-        if (!$this->isValidPlatform()) {
-            throw new NotValidPlatformException('You are not running on Platform.sh, so routes are not available.');
-        }
-
         if ($this->inBuild()) {
             throw new BuildTimeVariableAccessException('Routes are not available during the build phase.');
+        }
+        if (empty($this->variablesDef)) {
+            throw new NotValidPlatformException('No routes are defined.  Are you sure you are running on Platform.sh?');
         }
 
         return $this->routesDef;
@@ -344,8 +338,8 @@ class Config
      */
     public function application() : array
     {
-        if (!$this->isValidPlatform()) {
-            throw new NotValidPlatformException('You are not running on Platform.sh, so the application definition is not available.');
+        if (empty($this->applicationDef)) {
+            throw new NotValidPlatformException('No application definition is available.  Are you sure you are running on Platform.sh?');
         }
 
         return $this->applicationDef;
@@ -490,10 +484,6 @@ class Config
      */
     public function __get($property)
     {
-        if (!$this->isValidPlatform()) {
-            throw new NotValidPlatformException(sprintf('You are not running on Platform.sh, so the %s variable are not available.', $property));
-        }
-
         $isBuildVar = in_array($property, array_keys($this->directVariables));
         $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
         // For now, all unprefixed variables are also runtime variables.  If that ever changes this
@@ -505,13 +495,25 @@ class Config
         }
 
         if ($isBuildVar) {
-            return $this->getValue($this->directVariables[$property]);
+            $value = $this->getValue($this->directVariables[$property]);
+            if (is_null($value)) {
+                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
+            }
+            return $value;
         }
         if ($isUnprefixedVar) {
-            return $this->environmentVariables[$this->unPrefixedVariablesRuntime[$property]] ?? null;
+            $value = $this->environmentVariables[$this->unPrefixedVariablesRuntime[$property]] ?? null;
+            if (is_null($value)) {
+                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
+            }
+            return $value;
         }
         if ($isRuntimeVar) {
-            return $this->getValue($this->directVariablesRuntime[$property]);
+            $value = $this->getValue($this->directVariablesRuntime[$property]);
+            if (is_null($value)) {
+                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
+            }
+            return $value;
         }
 
         throw new \InvalidArgumentException(sprintf('No such variable defined: %s', $property));
@@ -528,10 +530,6 @@ class Config
      */
     public function __isset($property)
     {
-        if (!$this->isValidPlatform()) {
-            return false;
-        }
-
         $isBuildVar = in_array($property, array_keys($this->directVariables));
         $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
         // For now, all unprefixed variables are also runtime variables.  If that ever changes this
