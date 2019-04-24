@@ -156,6 +156,9 @@ class Config
 
         if ($routes = $this->getValue('ROUTES')) {
             $this->routesDef = $this->decode($routes);
+            foreach ($this->routesDef as $url => $route) {
+                $this->routesDef[$url]['url'] = $url;
+            }
         }
         if ($relationships = $this->getValue('RELATIONSHIPS')) {
             $this->relationshipsDef = $this->decode($relationships);
@@ -318,8 +321,6 @@ class Config
     {
         foreach ($this->routes() as $url => $route) {
             if ($route['id'] == $id) {
-                // This is non-standard, but means we don't need to return the array key in parallel.
-                $route['url'] = $url;
                 return $route;
             }
         }
