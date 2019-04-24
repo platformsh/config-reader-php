@@ -220,6 +220,18 @@ class ConfigTest extends TestCase
         $creds = $config->credentials('database', 3);
     }
 
+    public function test_credentials_works_in_local() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        unset($env['PLATFORM_APPLICATION'], $env['PLATFORM_ENVIRONMENT'], $env['PLATFORM_BRANCH']);
+        $config = new Config($env);
+
+        $creds = $config->credentials('database');
+
+        $this->assertEquals('mysql', $creds['scheme']);
+        $this->assertEquals('mysql:10.2', $creds['type']);
+    }
+
     public function test_hasRelationship_returns_true_for_existing_relationship() : void
     {
         $env = $this->mockEnvironmentDeploy;
