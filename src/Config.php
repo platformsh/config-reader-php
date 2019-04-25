@@ -491,33 +491,28 @@ class Config
         // logic will change with it.
         $isUnprefixedVar = in_array($property, array_keys($this->unPrefixedVariablesRuntime));
 
-        if ($this->inBuild() && $isRuntimeVar) {
-            throw new BuildTimeVariableAccessException(sprintf('The %s variable is not available during build time.', $property));
-        }
 
         if ($isBuildVar) {
             $value = $this->getValue($this->directVariables[$property]);
-            if (is_null($value)) {
-                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
-            }
-            return $value;
         }
-        if ($isUnprefixedVar) {
+        else if ($isUnprefixedVar) {
             $value = $this->environmentVariables[$this->unPrefixedVariablesRuntime[$property]] ?? null;
-            if (is_null($value)) {
-                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
-            }
-            return $value;
         }
-        if ($isRuntimeVar) {
+        else if ($isRuntimeVar) {
             $value = $this->getValue($this->directVariablesRuntime[$property]);
-            if (is_null($value)) {
-                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
-            }
-            return $value;
+        }
+        else {
+            throw new \InvalidArgumentException(sprintf('No such variable defined: %s', $property));
         }
 
-        throw new \InvalidArgumentException(sprintf('No such variable defined: %s', $property));
+        if (is_null($value)) {
+            if ($this->inBuild() && ($isRuntimeVar || $isUnprefixedVar)) {
+                throw new BuildTimeVariableAccessException(sprintf('The %s variable is not available during build time.', $property));
+            }
+            throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
+        }
+
+        return $value;
     }
 
     /**
@@ -531,21 +526,7 @@ class Config
      */
     public function __isset($property)
     {
-        $isBuildVar = in_array($property, array_keys($this->directVariables));
-        $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
-        // For now, all unprefixed variables are also runtime variables.  If that ever changes this
-        // logic will change with it.
-        $isUnprefixedVar = in_array($property, array_keys($this->unPrefixedVariablesRuntime));
-
-        if ($this->inBuild()) {
-            return $isBuildVar && !is_null($this->$property);
-        }
-
-        if ($isBuildVar || $isRuntimeVar || $isUnprefixedVar) {
-            return !is_null($this->$property);
-        }
-
-        return false;
+        return !is_null($this->$property);
     }
 
     /**
