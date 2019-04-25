@@ -485,39 +485,26 @@ class Config
      */
     public function __get($property)
     {
-        $isBuildVar = in_array($property, array_keys($this->directVariables));
-        $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
         // For now, all unprefixed variables are also runtime variables.  If that ever changes this
         // logic will change with it.
+        $isBuildVar = in_array($property, array_keys($this->directVariables));
+        $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
         $isUnprefixedVar = in_array($property, array_keys($this->unPrefixedVariablesRuntime));
 
-        if ($this->inBuild() && $isRuntimeVar) {
-            throw new BuildTimeVariableAccessException(sprintf('The %s variable is not available during build time.', $property));
+        if (!($isBuildVar || $isUnprefixedVar || $isRuntimeVar)) {
+            throw new \InvalidArgumentException(sprintf('No such variable defined: %s', $property));
         }
 
-        if ($isBuildVar) {
-            $value = $this->getValue($this->directVariables[$property]);
-            if (is_null($value)) {
-                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
+        $value = $this->getPropertyValue($property);
+
+        if (is_null($value)) {
+            if ($this->inBuild() && !$isBuildVar) {
+                throw new BuildTimeVariableAccessException(sprintf('The %s variable is not available during build time.', $property));
             }
-            return $value;
-        }
-        if ($isUnprefixedVar) {
-            $value = $this->environmentVariables[$this->unPrefixedVariablesRuntime[$property]] ?? null;
-            if (is_null($value)) {
-                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
-            }
-            return $value;
-        }
-        if ($isRuntimeVar) {
-            $value = $this->getValue($this->directVariablesRuntime[$property]);
-            if (is_null($value)) {
-                throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
-            }
-            return $value;
+            throw new NotValidPlatformException(sprintf('The %s variable is not defined. Are you sure you\'re running on Platform.sh?', $property));
         }
 
-        throw new \InvalidArgumentException(sprintf('No such variable defined: %s', $property));
+        return $value;
     }
 
     /**
@@ -531,21 +518,40 @@ class Config
      */
     public function __isset($property)
     {
-        $isBuildVar = in_array($property, array_keys($this->directVariables));
-        $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
+        $value = $this->getPropertyValue($property);
+
+        return !is_null($value);
+    }
+
+    /**
+     * Returns the value of a dynamic property, whatever it's configuration.
+     *
+     * @param string $property
+     *   The property value to get.
+     * @return string|null
+     */
+    protected function getPropertyValue(string $property) : ?string
+    {
         // For now, all unprefixed variables are also runtime variables.  If that ever changes this
         // logic will change with it.
+        $isBuildVar = in_array($property, array_keys($this->directVariables));
+        $isRuntimeVar = in_array($property, array_keys($this->directVariablesRuntime));
         $isUnprefixedVar = in_array($property, array_keys($this->unPrefixedVariablesRuntime));
 
-        if ($this->inBuild()) {
-            return $isBuildVar && !is_null($this->$property);
+        if ($isBuildVar) {
+            $value = $this->getValue($this->directVariables[$property]);
+        }
+        else if ($isUnprefixedVar) {
+            $value = $this->environmentVariables[$this->unPrefixedVariablesRuntime[$property]] ?? null;
+        }
+        else if ($isRuntimeVar) {
+            $value = $this->getValue($this->directVariablesRuntime[$property]);
+        }
+        else {
+            $value = null;
         }
 
-        if ($isBuildVar || $isRuntimeVar || $isUnprefixedVar) {
-            return !is_null($this->$property);
-        }
-
-        return false;
+        return $value;
     }
 
     /**
