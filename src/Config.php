@@ -297,7 +297,7 @@ class Config
         if ($this->inBuild()) {
             throw new BuildTimeVariableAccessException('Routes are not available during the build phase.');
         }
-        if (empty($this->variablesDef)) {
+        if (empty($this->routesDef)) {
             throw new NotValidPlatformException('No routes are defined.  Are you sure you are running on Platform.sh?');
         }
 
