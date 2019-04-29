@@ -117,7 +117,7 @@ To make sure that a relationship is defined before you try to access credentials
 
 ```php
 if ($config->hasRelationship('database')) {
-    $creds = $conifg->credentials('database');
+    $creds = $config->credentials('database');
     // ...
 }
 ```
@@ -173,10 +173,10 @@ This method looks for the "foo" variable.  If found, it is returned.  If not, th
 [Routes](https://docs.platform.sh/configuration/routes.html) on Platform.sh define how a project will handle incoming requests; that primarily means what application container will serve the request, but it also includes cache configuration, TLS settings, etc.  Routes may also have an optional ID, which is the preferred way to access them.
 
 ```php
-$config->route("main");
+$config->getRoute("main");
 ```
 
-The `route()` method takes a single string for the route ID ("main" in this case) and returns the corresponding route array.  If the route is not found it will throw an exception.
+The `getRoute()` method takes a single string for the route ID ("main" in this case) and returns the corresponding route array.  If the route is not found it will throw an exception.
 
 To access all routes, or to search for a route that has no ID, the `routes()` method returns an associative array of routes keyed by their URL.  That mirrors the structure of the `PLATFORM_ROUTES` environment variable.
 
