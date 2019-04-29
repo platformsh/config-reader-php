@@ -277,10 +277,8 @@ class Config
      */
     public function variables() : array
     {
-        if (empty($this->variablesDef)) {
-            throw new NotValidPlatformException('No variables are defined.  Are you sure you are running on Platform.sh?');
-        }
-
+        // It's valid for there to be no variables defined at all, so there's no guard
+        // for missing values.
         return $this->variablesDef;
     }
 
