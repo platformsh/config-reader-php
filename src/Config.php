@@ -303,6 +303,26 @@ class Config
     }
 
     /**
+     * Returns the primary route.
+     *
+     * The primary route is the one marked primary in `routes.yaml`, or else
+     * the first non-redirect route in that file if none are marked.
+     *
+     * @return array
+     *   The route definition.  The generated URL of the route is added as a "url" key.
+     */
+    public function getPrimaryRoute() : array
+    {
+        foreach ($this->routes() as $url => $route) {
+            if ($route['primary'] == true) {
+                return $route;
+            }
+        }
+
+        throw new \InvalidArgumentException(sprintf('No primary route found. This isn\'t supposed to happen'));
+    }
+
+    /**
      * Returns a single route definition.
      *
      * Note: If no route ID was specified in routes.yaml then it will not be possible

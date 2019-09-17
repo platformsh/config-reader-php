@@ -133,6 +133,17 @@ class ConfigTest extends TestCase
         $route = $config->getRoute('missing');
     }
 
+    public function test_primary_route_returns_correct_route() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $route = $config->getPrimaryRoute();
+
+        $this->assertEquals('https://www.{default}/', $route['original_url']);
+        $this->assertEquals('main', $route['id']);
+        $this->assertTrue($route['primary']);
+    }
+
     public function test_onenterprise_returns_true_on_enterprise() : void
     {
         $env = $this->mockEnvironmentDeploy;
