@@ -36,6 +36,80 @@
          "enabled" : false
       }
    },
+   "https://www2.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/" : {
+      "original_url" : "https://www.{default}/",
+      "attributes" : {},
+      "type" : "upstream",
+      "restrict_robots" : false,
+      "tls" : {
+         "client_authentication" : null,
+         "min_version" : 771,
+         "client_certificate_authorities" : [],
+         "strict_transport_security" : {
+            "include_subdomains" : null,
+            "enabled" : true,
+            "preload" : null
+         }
+      },
+      "upstream" : "app",
+      "cache" : {
+         "enabled" : true,
+         "headers" : [
+            "Accept",
+            "Accept-Language"
+         ],
+         "cookies" : [
+            "/^SS?ESS.*/"
+         ],
+         "default_ttl" : 0
+      },
+      "http_access" : {
+         "addresses" : [],
+         "basic_auth" : {}
+      },
+      "primary" : false,
+      "id" : "main",
+      "ssi" : {
+         "enabled" : false
+      }
+   },
+    "https://www3.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/" : {
+        "original_url" : "https://www.{default}/",
+        "attributes" : {},
+        "type" : "upstream",
+        "restrict_robots" : false,
+        "tls" : {
+            "client_authentication" : null,
+            "min_version" : 771,
+            "client_certificate_authorities" : [],
+            "strict_transport_security" : {
+                "include_subdomains" : null,
+                "enabled" : true,
+                "preload" : null
+            }
+        },
+        "upstream" : "app2",
+        "cache" : {
+            "enabled" : true,
+            "headers" : [
+                "Accept",
+                "Accept-Language"
+            ],
+            "cookies" : [
+                "/^SS?ESS.*/"
+            ],
+            "default_ttl" : 0
+        },
+        "http_access" : {
+            "addresses" : [],
+            "basic_auth" : {}
+        },
+        "primary" : false,
+        "id" : "main",
+        "ssi" : {
+            "enabled" : false
+        }
+    },
    "http://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/" : {
       "id" : null,
       "to" : "https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/",

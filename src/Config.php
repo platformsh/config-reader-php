@@ -323,6 +323,31 @@ class Config
     }
 
     /**
+     * Returns just those routes that point to a valid upstream.
+     *
+     * This method is similar to routes(), but filters out redirect routes that are rarely
+     * useful for app configuration.  If desired it can also filter to just those routes
+     * whose upstream is a given application name.  To retrieve routes that point to the
+     * current application where the code is being run, use:
+     *
+     * $routes =  $config->getUpstreamRoutes($config->applicationName);
+     *
+     * @param string|null $appName
+     *   The name of the upstream app on which to filter, if any.
+     * @return iterable
+     *   An iterable of route definitions.
+     */
+    public function getUpstreamRoutes(string $appName = null) : iterable
+    {
+        return array_filter($this->routes(), function (array $route) use ($appName) {
+            return $route['type'] == 'upstream'
+                // On Dedicated, the upstream name sometimes is `app:http` instead of just `app`.
+                // If no name is specified then don't bother checking.
+                && (is_null($appName) || $appName == explode(':', $route['upstream'])[0]);
+        });
+    }
+
+    /**
      * Returns a single route definition.
      *
      * Note: If no route ID was specified in routes.yaml then it will not be possible
