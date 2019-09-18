@@ -319,7 +319,7 @@ class Config
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('No primary route found. This isn\'t supposed to happen'));
+        throw new \InvalidArgumentException(sprintf('No primary route found. This isn\'t supposed to happen.'));
     }
 
     /**
