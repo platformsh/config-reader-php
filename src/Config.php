@@ -334,10 +334,10 @@ class Config
      *
      * @param string|null $appName
      *   The name of the upstream app on which to filter, if any.
-     * @return iterable
-     *   An iterable of route definitions.
+     * @return array
+     *   An array of route definitions.
      */
-    public function getUpstreamRoutes(string $appName = null) : iterable
+    public function getUpstreamRoutes(string $appName = null) : array
     {
         return array_filter($this->routes(), function (array $route) use ($appName) {
             return $route['type'] == 'upstream'
