@@ -133,6 +133,56 @@ class ConfigTest extends TestCase
         $route = $config->getRoute('missing');
     }
 
+    public function test_primary_route_returns_correct_route() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $route = $config->getPrimaryRoute();
+
+        $this->assertEquals('https://www.{default}/', $route['original_url']);
+        $this->assertEquals('main', $route['id']);
+        $this->assertTrue($route['primary']);
+    }
+
+    public function test_upstream_routes() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $routes = $config->getUpstreamRoutes();
+
+        $this->assertCount(3, $routes);
+        $this->assertArrayHasKey('https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/', $routes);
+        $this->assertEquals('https://www.{default}/', $routes['https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/']['original_url']);
+    }
+
+    public function test_upstream_routes_for_app() : void
+    {
+        $config = new Config($this->mockEnvironmentDeploy);
+
+        $routes = $config->getUpstreamRoutes('app');
+
+        $this->assertCount(2, $routes);
+        $this->assertArrayHasKey('https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/', $routes);
+        $this->assertEquals('https://www.{default}/', $routes['https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/']['original_url']);
+    }
+
+    public function test_upstream_routes_for_app_on_dedicated() : void
+    {
+        $env = $this->mockEnvironmentDeploy;
+        // Simulate a Dedicated-style upstream name.
+        $routeData = $this->loadJsonFile('PLATFORM_ROUTES');
+        $routeData['https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/']['upstream'] = 'app:http';
+        $env['PLATFORM_ROUTES'] = $this->encode($routeData);
+
+        $config = new Config($env);
+
+        $routes = $config->getUpstreamRoutes('app');
+
+        $this->assertCount(2, $routes);
+        $this->assertArrayHasKey('https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/', $routes);
+        $this->assertEquals('https://www.{default}/', $routes['https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/']['original_url']);
+    }
+
     public function test_onenterprise_returns_true_on_enterprise() : void
     {
         $env = $this->mockEnvironmentDeploy;
