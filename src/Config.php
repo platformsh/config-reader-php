@@ -403,6 +403,15 @@ class Config
     /**
      * Determines if the current environment is a Platform.sh Dedicated environment.
      *
+     * @deprecated
+     *
+     * The Platform.sh "Enterprise" will soon be referred to exclusively as
+     * "Dedicated". the `onEnterprise` method remains available for now, but it
+     * will be removed in a future version of this library.
+     *
+     * It is recommended that you update your projects to use `onDedicated` as
+     * soon as possible.
+     *
      * @return bool
      *   True on an Dedicated environment, False otherwise.
      */
