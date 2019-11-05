@@ -183,24 +183,24 @@ class ConfigTest extends TestCase
         $this->assertEquals('https://www.{default}/', $routes['https://www.master-7rqtwti-gcpjkefjk4wc2.us-2.platformsh.site/']['original_url']);
     }
 
-    public function test_onenterprise_returns_true_on_enterprise() : void
+    public function test_ondedicated_returns_true_on_dedicated() : void
     {
         $env = $this->mockEnvironmentDeploy;
         $env['PLATFORM_MODE'] = 'enterprise';
         $config = new Config($env);
 
-        $this->assertTrue($config->onEnterprise());
+        $this->assertTrue($config->onDedicated());
     }
 
-    public function test_onenterprise_returns_false_on_standard() : void
+    public function test_ondedicated_returns_false_on_standard() : void
     {
         $env = $this->mockEnvironmentDeploy;
         $config = new Config($env);
 
-        $this->assertFalse($config->onEnterprise());
+        $this->assertFalse($config->onDedicated());
     }
 
-    public function test_onproduction_on_enterprise_prod_is_true() : void
+    public function test_onproduction_on_dedicated_prod_is_true() : void
     {
         $env = $this->mockEnvironmentDeploy;
         $env['PLATFORM_MODE'] = 'enterprise';
@@ -210,7 +210,7 @@ class ConfigTest extends TestCase
         $this->assertTrue($config->onProduction());
     }
 
-    public function test_onproduction_on_enterprise_stg_is_false() : void
+    public function test_onproduction_on_dedicated_stg_is_false() : void
     {
         $env = $this->mockEnvironmentDeploy;
         $env['PLATFORM_MODE'] = 'enterprise';

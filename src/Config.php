@@ -390,20 +390,40 @@ class Config
     }
 
     /**
-     * Determines if the current environment is a Platform.sh Enterprise environment.
+     * Determines if the current environment is a Platform.sh Dedicated environment.
      *
      * @return bool
-     *   True on an Enterprise environment, False otherwise.
+     *   True on an Dedicated environment, False otherwise.
      */
-    public function onEnterprise() : bool
+    public function onDedicated() : bool
     {
         return $this->isValidPlatform() && $this->getValue('MODE') == 'enterprise';
     }
 
     /**
+     * Determines if the current environment is a Platform.sh Dedicated environment.
+     *
+     * @deprecated
+     *
+     * The Platform.sh "Enterprise" will soon be referred to exclusively as
+     * "Dedicated". the `onEnterprise` method remains available for now, but it
+     * will be removed in a future version of this library.
+     *
+     * It is recommended that you update your projects to use `onDedicated` as
+     * soon as possible.
+     *
+     * @return bool
+     *   True on an Dedicated environment, False otherwise.
+     */
+    public function onEnterprise() : bool
+    {
+        return $this->onDedicated();
+    }
+
+    /**
      * Determines if the current environment is a production environment.
      *
-     * Note: There may be a few edge cases where this is not entirely correct on Enterprise,
+     * Note: There may be a few edge cases where this is not entirely correct on Dedicated,
      * if the production branch is not named `production`.  In that case you'll need to use
      * your own logic.
      *
@@ -417,7 +437,7 @@ class Config
             return false;
         }
 
-        $prodBranch = $this->onEnterprise() ? 'production' : 'master';
+        $prodBranch = $this->onDedicated() ? 'production' : 'master';
 
         return $this->getValue('BRANCH') == $prodBranch;
     }
