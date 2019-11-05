@@ -64,10 +64,16 @@ $config->inBuild();
 
 $config->inRuntime();
 
-$config->onEnterprise();
+$config->onDedicated();
 
 $config->onProduction();
 ```
+
+> **Note:**
+>
+> Platform.sh will no longer refer to its [99.99% uptime SLA product](https://platform.sh/solutions/) as "Enterprise", but rather as "Dedicated". Configuration Reader libraries have in turn been updated to include an `onDedicated` method to replace `onEnterprise`. For now `onEnterprise` remains available. It now calls the new method and no breaking changes have been introduced.
+>
+> It is recommended that you update your projects to use `onDedicated` as soon as possible, as `onEnterprise` will be removed in a future version of this library.
 
 ### Read environment variables
 
@@ -129,7 +135,7 @@ In some cases the library being used to connect to a service wants its credentia
 Credential Formatters can be registered on the configuration object, and a few are included out of the box.  That allows 3rd party libraries to ship their own formatters that can be easily integrated into the `Config` object to allow easier use.
 
 ```php
-function formatMyService(array $credentials) string 
+function formatMyService(array $credentials) string
 {
 	return "some string based on $credentials";
 }
