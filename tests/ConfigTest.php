@@ -22,7 +22,7 @@ class ConfigTest extends TestCase
      */
     protected $mockEnvironmentDeploy = [];
 
-    public function setUp()
+    public function setUp(): void
     {
         $env = $this->loadJsonFile('ENV');
 
