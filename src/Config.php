@@ -35,6 +35,8 @@ namespace Platformsh\ConfigReader;
  *   The Git branch name.
  * @property-read string $environment
  *   The environment ID (usually the Git branch plus a hash).
+ * @property-read string $environmentType
+ *   The environment type.
  * @property-read string $documentRoot
  *   The absolute path to the web root of the application.
  * @property-read string $smtpHost
@@ -76,6 +78,7 @@ class Config
     protected $directVariablesRuntime = [
         'branch' => 'BRANCH',
         'environment' => 'ENVIRONMENT',
+        'environmentType' => 'ENVIRONMENT_TYPE',
         'documentRoot' => 'DOCUMENT_ROOT',
         'smtpHost' => 'SMTP_HOST',
     ];
@@ -437,9 +440,7 @@ class Config
             return false;
         }
 
-        $prodBranch = $this->onDedicated() ? 'production' : 'master';
-
-        return $this->getValue('BRANCH') == $prodBranch;
+        return $this->getValue('ENVIRONMENT_TYPE') == 'production';
     }
 
     /**
