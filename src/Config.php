@@ -442,6 +442,27 @@ class Config
         return $this->getValue('BRANCH') == $prodBranch;
     }
 
+        /**
+         * Determines if the current environment has a live domain added to it
+         * 
+         * @return bool
+         *   True if the environment has at least one domain that is not ending in platformsh.site, false otherwise.
+         *   It will also return false if not running on Platform.sh or in the build phase.
+         */
+        public function isDomainAdded(): bool
+        {
+            if (!$this->inRuntime()) {
+                return false;
+            }
+    
+            foreach ($this->routes() as $route) {
+                if (mb_strpos($route['url'], 'platformsh.site') === false) {
+                    return true;
+                }
+            }
+    
+            return false;
+        }
     /**
      * Adds a credential formatter to the configuration.
      *
