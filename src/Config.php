@@ -508,6 +508,14 @@ class Config
     protected function getValue(string $name) : ?string
     {
         $checkName = $this->envPrefix . strtoupper($name);
+        /*
+         * If enable_smtp is to `false` for the project, then the envPrefix.SMTP_HOST environmental variable is not
+         * included in the environment. Therefore, if the environmental variable isn't set, return an empty string, not
+         * a null
+         */
+        if('SMTP_HOST' === $name) {
+            return $this->environmentVariables[$checkName] ?? "";
+        }
         return $this->environmentVariables[$checkName] ?? null;
     }
 
