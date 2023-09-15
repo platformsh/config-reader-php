@@ -200,43 +200,23 @@ class ConfigTest extends TestCase
         $this->assertFalse($config->onDedicated());
     }
 
-    public function test_onproduction_on_dedicated_prod_is_true() : void
+    public function test_onproduction_prod_is_true() : void
     {
         $env = $this->mockEnvironmentDeploy;
-        $env['PLATFORM_MODE'] = 'enterprise';
-        $env['PLATFORM_BRANCH'] = 'production';
+        $env['PLATFORM_ENVIRONMENT_TYPE'] = 'production';
         $config = new Config($env);
 
         $this->assertTrue($config->onProduction());
     }
 
-    public function test_onproduction_on_dedicated_stg_is_false() : void
+    public function test_onproduction_stg_is_false() : void
     {
         $env = $this->mockEnvironmentDeploy;
-        $env['PLATFORM_MODE'] = 'enterprise';
-        $env['PLATFORM_BRANCH'] = 'staging';
+        $env['PLATFORM_ENVIRONMENT_TYPE'] = 'staging';
         $config = new Config($env);
 
         $this->assertFalse($config->onProduction());
 
-    }
-
-    public function test_onproduction_on_standard_prod_is_true() : void
-    {
-        $env = $this->mockEnvironmentDeploy;
-        $env['PLATFORM_BRANCH'] = 'master';
-        $config = new Config($env);
-
-        $this->assertTrue($config->onProduction());
-    }
-
-    public function test_onproduction_on_standard_stg_is_false() : void
-    {
-        // The fixture has a non-master branch set by default.
-        $env = $this->mockEnvironmentDeploy;
-        $config = new Config($env);
-
-        $this->assertFalse($config->onProduction());
     }
 
     public function test_credentials_existing_relationship_returns() : void
