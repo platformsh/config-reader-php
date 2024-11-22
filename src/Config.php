@@ -149,7 +149,7 @@ class Config
      * @param string $envPrefix
      *   The prefix for environment variables. Defaults to 'PLATFORM_'.
      */
-    public function __construct(array $environmentVariables = null, string $envPrefix = 'PLATFORM_')
+    public function __construct(?array $environmentVariables = null, string $envPrefix = 'PLATFORM_')
     {
         $this->environmentVariables = $environmentVariables ?? getenv();
         $this->envPrefix = $envPrefix;
@@ -337,7 +337,7 @@ class Config
      * @return array
      *   An array of route definitions.
      */
-    public function getUpstreamRoutes(string $appName = null) : array
+    public function getUpstreamRoutes(?string $appName = null) : array
     {
         return array_filter($this->routes(), function (array $route) use ($appName) {
             return $route['type'] == 'upstream'
